@@ -13,6 +13,44 @@
 <body>
     <div id="app">
         <!-- 第1行：通知栏 -->
+        <!-- <div class="notification-bar">
+            <span class="info-icon">ℹ️</span>
+            <span>正在查看此账号，视图过滤条件与上次保存的视图过滤条件不同。</span>
+            <a href="#" class="restore-link">恢复已保存的视图过滤条件</a>
+        </div> -->
+
+        <!-- <div style="margin-top: 100px; display: flex; flex-wrap: nowrap;">
+            <span class="material-symbols-outlined">Edit</span>
+            <span class="material-symbols-outlined">Undo</span>
+            <span class="material-symbols-outlined">Redo</span>
+            <span class="material-symbols-outlined">filter_alt</span>
+            <span class="material-symbols-outlined">chevron_left</span>
+            <span class="material-symbols-outlined">chevron_right</span>
+            <span class="material-symbols-outlined">arrow_drop_down</span>
+            <span class="material-symbols-outlined">arrow_drop_up</span>
+            <span class="material-symbols-outlined">first_page</span>
+            <span class="material-symbols-outlined">last_page</span>
+            <span class="material-symbols-outlined">feedback</span>
+            <span class="material-symbols-outlined">access_time</span>
+            <span class="material-symbols-outlined">file_download</span>
+            <span style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            background-color: #5f6368;
+            color: #fff;
+            ">
+                <span class="material-symbols-outlined" style="transform: rotate(-90deg);">stat_2</span></span>
+        </div> -->
+
+
+        <!-- 第1行：通知栏 -->
         <div class="header">
             <div class="header-left">
                 <div class="menu-icon">
@@ -143,46 +181,52 @@
             </div>
         </div>
 
-        <!-- 第4行：工具栏 -->
+
+        <!-- 第2行：工具栏 -->
         <div class="toolbar">
             <div class="toolbar-left">
                 <div class="campaign-selector">
                     <button class="selector-btn">
                         <div>
-                            <span>2</span>
-                            <span>Unsaved</span>
+                            <span style="font-size: 18px; font-weight: 500;">2</span>
+                            <span style="font-size: 12px; font-weight: 500;">Unsaved</span>
                         </div>
-                        <span class="arrow">▼</span>
+                        <span class="material-symbols-outlined">arrow_drop_down</span>
                     </button>
-                    <span class="material-symbols-outlined">Edit</span>
+                    <span class="material-symbols-outlined" style="color: #5f6368;">Edit</span>
                 </div>
             </div>
             <div class="toolbar-right">
-                <button class="tool-btn tool-btn-2item">
-                    <span class="material-symbols-outlined">file_download</span>
-                    <span>Download</span>
-                </button>
-                <button class="tool-btn tool-btn-2item">
-                    <span class="material-symbols-outlined">access_time</span>
-                    <span>Schedule</span>
-                </button>
-                <button class="tool-btn tool-btn-2item">
-                    <span class="material-symbols-outlined">feedback</span>
-                    <span>Feedback</span>
-                </button>
+                <div class="toolbar-right-icons">
+                    <button class="tool-btn tool-btn-2item">
+                        <span class="material-symbols-outlined">file_download</span>
+                        <span>Download</span>
+                    </button>
+                    <button class="tool-btn tool-btn-2item">
+                        <span class="material-symbols-outlined">access_time</span>
+                        <span>Schedule</span>
+                    </button>
+                    <button class="tool-btn tool-btn-2item">
+                        <span class="material-symbols-outlined">feedback</span>
+                        <span>Feedback</span>
+                    </button>
+                </div>
                 <div class="divider" style="height: 56px; margin: 0 10px;"></div>
-                <button class="tool-btn tool-item-black">
-                    <span>Reset</span>
-                </button>
-                <button class="tool-btn tool-item-blue">
-                    <span>Save</span>
-                </button>
-                <button class="tool-btn tool-item-blue">
-                    <span>Save as</span>
-                </button>
-                <button class="tool-btn tool-item-blue">
-                    <span>Add to dashboard</span>
-                </button>
+                <div class="toolbar-right-editbtn">
+
+                    <button class="tool-btn tool-item-black">
+                        <span>Reset</span>
+                    </button>
+                    <button class="tool-btn tool-item-blue">
+                        <span>Save</span>
+                    </button>
+                    <button class="tool-btn tool-item-blue">
+                        <span>Save as</span>
+                    </button>
+                    <button class="tool-btn tool-item-blue">
+                        <span>Add to dashboard</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -261,83 +305,90 @@
                     <tr>
                         <th class="col-campaign" style="width: 300px;" @click="sortBy('campaign')">
                             <div class="th-content" style="justify-content: flex-start;">
-                                <span>Campaign</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.campaign === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
+                                <span class="span-title-child">Campaign</span>
+                                <span v-if="sortKey === 'campaign'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.campaign === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
                                     }}</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
-                        <th class="col-metric" @click="sortBy('cost')">
+                        <th class="col-metric">
                             <div class="th-content">
-                                <span>Cost</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.cost === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
-                                    }}</span>
+                                <span class="span-title-child">Cost</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                         <th class="col-metric" @click="sortBy('impressions')">
                             <div class="th-content">
-                                <span>Impr.</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.impressions === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
+                                <span v-if="sortKey === 'impressions'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.impressions === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
                                     }}</span>
+                                <span class="span-title-child">Impr.</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                         <th class="col-metric" @click="sortBy('clicks')">
                             <div class="th-content">
-                                <span>Clicks</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.clicks === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
+                                <span v-if="sortKey === 'clicks'" class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.clicks === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
                                     }}</span>
+                                <span class="span-title-child">Clicks</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                         <th class="col-metric" @click="sortBy('installs')">
                             <div class="th-content">
-                                <span>Installs</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.installs === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
+                                <span v-if="sortKey === 'installs'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.installs === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
                                     }}</span>
+                                <span class="span-title-child">Installs</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                         <th class="col-metric" @click="sortBy('inAppActions')">
                             <div class="th-content">
-                                <span>In-app actions</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.inAppActions === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
+                                <span v-if="sortKey === 'inAppActions'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.inAppActions === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
                                     }}</span>
+                                <span class="span-title-child">In-app actions</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
-                        <th class="col-metric" @click="sortBy('costPerInstall')">
+                        <th class="col-metric">
                             <div class="th-content">
-                                <span>Cost / Install</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.costPerInstall === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
-                                    }}</span>
+                                <span class="span-title-child">Cost / Install</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
-                        <th class="col-metric" @click="sortBy('costPerAction')">
+                        <th class="col-metric">
                             <div class="th-content">
-                                <span>Cost / In-app action</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.costPerInAppActions === 'asc' ?
-                                    'arrow_drop_up' :
-                                    'arrow_drop_down'
-                                    }}</span>
+                                <span class="span-title-child">Cost / In-app action</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                         <th class="col-metric" @click="sortBy('ctr')">
                             <div class="th-content">
-                                <span>CTR</span>
-                                <span class="material-symbols-outlined">{{ sortOrderList.ctr === 'asc' ? 'arrow_drop_up'
-                                    :
-                                    'arrow_drop_down'
+                                <span v-if="sortKey === 'ctr'" class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.ctr === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
                                     }}</span>
+                                <span class="span-title-child">CTR</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                     </tr>
