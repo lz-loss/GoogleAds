@@ -81,6 +81,10 @@ createApp({
         totalPages() {
             return Math.ceil(this.filteredCampaigns.length / this.pageSize);
         },
+        showPagination() {
+            // 只有当数据行数超过每页显示行数时才显示分页
+            return this.filteredCampaigns.length > this.pageSize;
+        },
         startRow() {
             return (this.currentPage - 1) * this.pageSize + 1;
         },

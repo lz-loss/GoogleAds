@@ -62,7 +62,7 @@ body {
 }
 
 #app {
-    min-height: 100vh;
+    height: calc(100vh - 24px);
     display: flex;
     flex-direction: column;
 }
@@ -437,8 +437,10 @@ body {
 
 .view-btn>div>span:last-child,
 .campaign-view-btn>div>span:last-child {
-    font-size: 12px;
-    color: #5f6368;
+    color: #202124;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03rem;
 }
 
 .view-btn .material-symbols-outlined:last-child,
@@ -635,7 +637,7 @@ body {
 .toolbar-right-editbtn {
     display: flex;
     flex-wrap: nowrap;
-    gap: 9px;
+    gap: 6px;
 }
 
 .tool-btn {
@@ -707,7 +709,7 @@ body {
 
 .divider {
     width: 1px;
-    height: 24px;
+    height: 34px;
     background-color: #dadce0;
     margin: 0 4px;
 }
@@ -949,25 +951,70 @@ input:checked+.toggle-slider:before {
 
 /* ========== 表格区域 ========== */
 .table-wrapper {
-    overflow: auto;
     background-color: #fff;
     padding: 0;
     margin: 8px;
     border: 1px solid #dadce0;
     border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    /* 让表格最大高度自适应，不强制固定高度 */
+    max-height: calc(100vh - 400px);
+    min-height: auto;
+}
+
+/* 表格容器 - 直接让表格可滚动 */
+.table-wrapper {
+    overflow: hidden;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
-    table-layout: auto;
+    table-layout: fixed;
+    /* 固定列宽 */
+    display: flex;
+    flex-direction: column;
+    /* 让表格高度自适应内容，不强制100% */
+    flex: 0 1 auto;
 }
 
+/* 表头固定 */
 .data-table thead {
     position: sticky;
     top: 0;
     z-index: 10;
+    background-color: #fff;
+    flex-shrink: 0;
+}
+
+/* 表尾固定 */
+.data-table tfoot {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background-color: #f5f5f5;
+    flex-shrink: 0;
+}
+
+/* 表格主体可滚动，但内容少时自适应 */
+.data-table tbody {
+    display: block;
+    overflow-y: auto;
+    /* 让tbody在内容多时滚动，内容少时自适应 */
+    flex: 1 1 auto;
+    max-height: calc(100vh - 550px);
+    min-height: auto;
+}
+
+/* 确保thead、tbody、tfoot中的tr都显示为表格行 */
+.data-table thead tr,
+.data-table tbody tr,
+.data-table tfoot tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .data-table th {
@@ -979,17 +1026,42 @@ input:checked+.toggle-slider:before {
     white-space: nowrap;
     vertical-align: middle;
     user-select: none;
+    background-color: #fff;
+    /* 确保表头有背景色 */
+}
+
+/* 设置每列的宽度 */
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+    width: 300px;
+}
+
+.data-table th:nth-child(2),
+.data-table td:nth-child(2),
+.data-table th:nth-child(3),
+.data-table td:nth-child(3),
+.data-table th:nth-child(4),
+.data-table td:nth-child(4),
+.data-table th:nth-child(5),
+.data-table td:nth-child(5),
+.data-table th:nth-child(6),
+.data-table td:nth-child(6),
+.data-table th:nth-child(7),
+.data-table td:nth-child(7),
+.data-table th:nth-child(8),
+.data-table td:nth-child(8),
+.data-table th:nth-child(9),
+.data-table td:nth-child(9) {
+    width: 120px;
 }
 
 .data-table th.col-campaign {
-    min-width: 280px;
     cursor: pointer;
     text-align: center;
     /* 居中对齐 */
 }
 
 .data-table th.col-metric {
-    min-width: 120px;
     text-align: center;
     /* 居中对齐 */
     cursor: pointer;
@@ -1196,4 +1268,17 @@ input:checked+.toggle-slider:before {
 
 .gray-color {
     color: #757575 !important;
+}
+
+.footer {
+    height: 24px;
+    width: 100%;
+    padding-left: 6px;
+    font-family: MyRoboto, Arial, sans-serif;
+    line-height: 1rem;
+    font-size: .75rem;
+    letter-spacing: .025em;
+    font-weight: 400;
+    color: var(--acx-sys-color--on-surface-variant, #5f6368);
+    color: var(--acx-sys-color--on-surface, #3c4043);
 }

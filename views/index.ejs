@@ -136,8 +136,7 @@
                         <span style="display: flex; flex-direction: row; justify-content: center;">
                             <span style="color: #3c4043; font-weight: 600;"
                                 class="material-symbols-outlined">home</span>
-                            <span
-                                style="padding: 3px 0 0 5px; color: #3c4043; font-size: 0.84rem; font-weight: 600; letter-spacing: 0.03rem;">All
+                            <span class="view-btn-tt" style="padding: 3px 0 0 5px;">All
                                 campaigns</span>
                         </span>
                     </div>
@@ -147,8 +146,7 @@
                 <button class="campaign-view-btn">
                     <div>
                         <span style="color: #5f6368; font-size: 0.75rem; letter-spacing: 0.03rem;">Campaigns (15)</span>
-                        <span
-                            style="padding: 3px 0 0 0px; color: #3c4043; font-size: 0.84rem; font-weight: 600; letter-spacing: 0.03rem;">Select
+                        <span class="view-btn-tt" style="padding: 3px 0 0 0px;">Select
                             a campaign</span>
                     </div>
                     <span class="material-symbols-outlined"
@@ -265,7 +263,8 @@
                     </div>
                 </div>
                 <div class="divider _ngcontent-awn-GINSU-22"></div>
-                <div style="color: #5f637b; margin-right: 24px;">
+                <div
+                    style="color: #5f637b; margin-right: 24px; display: flex; align-items: center; flex-direction: column; gap: 2px;">
                     <span class="material-symbols-outlined" style="font-size: 25px;">filter_alt</span>
                     <div style="font-size: 8px;">Filter</div>
                 </div>
@@ -423,7 +422,7 @@
             </table>
 
             <!-- 分页控件 -->
-            <div class="pagination">
+            <div class="pagination" v-if="showPagination">
                 <div class="page-size" style="position: relative;">
                     <span>Show rows</span>
                     <div class="select-div" @click="togglePageSizeDropdown">
@@ -450,7 +449,9 @@
                 </div>
             </div>
         </div>
+
     </div>
+    <div class="footer"> © Google, 2026.</div>
 
     <!-- Vue.js CDN -->
     <script src="./js/vue.global.js"></script>
