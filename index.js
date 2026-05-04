@@ -1,0 +1,59 @@
+const Koa = require('koa');
+const Router = require('koa-router');
+const views = require('koa-views');
+const serve = require('koa-static');
+const path = require('path');
+const https = require('https');
+const fs = require('fs');
+
+const app = new Koa();
+const router = new Router();
+
+// 配置模板引擎
+app.use(views(path.join(__dirname, 'views'), {
+  extension: 'ejs'
+}));
+
+// 静态资源服务
+app.use(serve(path.join(__dirname, 'public')));
+
+// 路由配置
+router.get('/', async (ctx) => {
+
+  // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
+  const transform = require('./transform');
+  await transform.main();
+
+  await ctx.render('index', {});
+});
+router.get('/aw/reporteditor/view', async (ctx) => {
+  // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
+  const transform = require('./transform');
+  await transform.main();
+
+  await ctx.render('index', {});
+});
+
+router.get('/adsmanager/reporting/manage', async (ctx) => {
+  await ctx.render('manage', {});
+});
+router.get('/adsmanager/reporting/business_view', async (ctx) => {
+  await ctx.render('business_view', {});
+});
+
+// 注册路由
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+// HTTPS 配置
+const sslOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'ssl', 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'ssl', 'cert.pem'))
+};
+
+// 启动 HTTPS 服务器
+const HTTPS_PORT = process.env.PORT || 443;
+https.createServer(sslOptions, app.callback()).listen(HTTPS_PORT, () => {
+  console.log(`HTTPS Server is running on https://ads.google.com:${HTTPS_PORT}`);
+  console.log(`HTTPS Server is running on https://localhost:${HTTPS_PORT}`);
+});

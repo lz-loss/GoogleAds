@@ -1,0 +1,47 @@
+[
+  {
+    "width": 100,
+    "key": "campaign",
+    "label": "Campaign"
+  },
+  {
+    "width": 100,
+    "key": "cost",
+    "label": "Cost"
+  },
+  {
+    "width": 100,
+    "key": "impressions",
+    "label": "Impr."
+  },
+  {
+    "width": 100,
+    "key": "clicks",
+    "label": "Clicks"
+  },
+  {
+    "width": 100,
+    "key": "installs",
+    "label": "Installs"
+  },
+  {
+    "width": 100,
+    "key": "inAppActions",
+    "label": "In-app actions"
+  },
+  {
+    "width": 100,
+    "key": "costPerInstall",
+    "label": "Cost/Install"
+  },
+  {
+    "width": 100,
+    "key": "costPerInAppActions",
+    "label": "Cost/In-app actions"
+  },
+  {
+    "width": 100,
+    "key": "ctr",
+    "label": "CTR"
+  }
+]

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Ads 广告系列报表</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- 第1行：通知栏 -->
+        <!-- <div class="notification-bar">
+            <span class="info-icon">ℹ️</span>
+            <span>正在查看此账号，视图过滤条件与上次保存的视图过滤条件不同。</span>
+            <a href="#" class="restore-link">恢复已保存的视图过滤条件</a>
+        </div> -->
+
+        <!-- <div style="margin-top: 100px; display: flex; flex-wrap: nowrap;">
+            <span class="material-symbols-outlined">Edit</span>
+            <span class="material-symbols-outlined">Undo</span>
+            <span class="material-symbols-outlined">Redo</span>
+            <span class="material-symbols-outlined">filter_alt</span>
+            <span class="material-symbols-outlined">chevron_left</span>
+            <span class="material-symbols-outlined">chevron_right</span>
+            <span class="material-symbols-outlined">arrow_drop_down</span>
+            <span class="material-symbols-outlined">arrow_drop_up</span>
+            <span class="material-symbols-outlined">first_page</span>
+            <span class="material-symbols-outlined">last_page</span>
+            <span class="material-symbols-outlined">feedback</span>
+            <span class="material-symbols-outlined">access_time</span>
+            <span class="material-symbols-outlined">file_download</span>
+            <span style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            background-color: #5f6368;
+            color: #fff;
+            ">
+                <span class="material-symbols-outlined" style="transform: rotate(-90deg);">stat_2</span></span>
+        </div> -->
+
+        <!-- 第2行：工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="campaign-selector">
+                    <button class="selector-btn">
+                        <div>
+                            <span>2</span>
+                            <span>Unsaved</span>
+                        </div>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <span class="material-symbols-outlined">Edit</span>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button class="tool-btn">
+                    <span class="material-symbols-outlined">file_download</span>
+                    <span>Download</span>
+                </button>
+                <button class="tool-btn">
+                    <span class="material-symbols-outlined">access_time</span>
+                    <span>Schedule</span>
+                </button>
+                <button class="tool-btn">
+                    <span class="material-symbols-outlined">feedback</span>
+                    <span>Feedback</span>
+                </button>
+                <button class="tool-btn">
+                    <span>Reset</span>
+                </button>
+                <div class="divider"></div>
+                <button class="tool-btn">
+                    <span>Save</span>
+                </button>
+                <button class="tool-btn">
+                    <span>Save as</span>
+                </button>
+                <button class="tool-btn">
+                    <span>Add to dashboard</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 第3行：日期选择栏 -->
+        <div class="date-bar">
+            <div class="date-controls">
+                <div class="date-range">
+                    <div>
+                        <span class="material-symbols-outlined">Undo</span>
+                        <label>Undo</label>
+                    </div>
+                    <div>
+                        <span class="material-symbols-outlined">Redo</span>
+                        <label>Redo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="compare-controls">
+                <div class="all_accounts">
+                    <spam style="font-size: 15px; font-weight: 500; letter-spacing: 0.1px;">2 accounts</spam>
+                    <span class="material-symbols-outlined">Edit</span>
+                </div>
+                <div class="divider _ngcontent-awn-GINSU-22"></div>
+                <div class="date-select">
+                    <div>Yesterday</div>
+                    <div>
+                        <div>
+                            <span>25 Mar 2026</span>
+                            <span class="material-symbols-outlined" style="color: #5f637b;">arrow_drop_down</span>
+                        </div>
+                        <div>
+                            <span class="material-symbols-outlined">chevron_left</span>
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider _ngcontent-awn-GINSU-22"></div>
+                <div style="color: #5f637b; margin-right: 24px;">
+                    <span class="material-symbols-outlined" style="font-size: 26px;">filter_alt</span>
+                    <div style="font-size: 8px;">Filter</div>
+                </div>
+                <div>
+                    <span style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 40px;
+                            height: 40px;
+                            line-height: 40px;
+                            text-align: center;
+                            border-top-left-radius: 20px;
+                            border-bottom-left-radius: 20px;
+                            background-color: #5f6368;
+                            color: #fff;
+                            ">
+                        <span class="material-symbols-outlined" style="transform: rotate(-90deg);">stat_2</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div>
+                <div class="thead">Filters</div>
+                <input type="text" v-model="filterText" @input="saveFilter" class="field" placeholder="Enter filter">
+            </div>
+            <div @click="clearFilter" style="cursor: pointer; padding-right: 25px; padding-top: 3px; color: #5f6368;">
+                <span class="material-symbols-outlined">delete</span>
+            </div>
+        </div>
+
+        <!-- 表格区域 -->
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-campaign" style="width: 300px;">
+                            <div class="th-content" style="justify-content: flex-start;">
+                                <span>Campaign</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('cost')">
+                            <div class="th-content">
+                                <span>Cost</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('impressions')">
+                            <div class="th-content">
+                                <span>Impr.</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('clicks')">
+                            <div class="th-content">
+                                <span>Clicks</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('installs')">
+                            <div class="th-content">
+                                <span>Installs</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('inAppActions')">
+                            <div class="th-content">
+                                <span>In-app actions</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('costPerInstall')">
+                            <div class="th-content">
+                                <span>Cost/Install</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('costPerAction')">
+                            <div class="th-content">
+                                <span>Cost/In-app actions</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('ctr')">
+                            <div class="th-content">
+                                <span>CTR</span>
+                                <span class="material-symbols-outlined">{{ sortOrder === 'asc' ? 'arrow_drop_down' :
+                                    'arrow_drop_up'
+                                    }}</span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="campaign in paginatedCampaigns" :key="campaign.id"
+                        :class="{ 'selected': campaign.selected }">
+                        <td>{{ campaign.name }} </td>
+                        <td class="col-metric">{{ formatCurrency(campaign.cost) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.impressions) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.clicks) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.installs, 2) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.inAppActions, 2) }}</td>
+                        <td class="col-metric">{{ formatCurrency(campaign.costPerInstall) }}</td>
+                        <td class="col-metric">{{ formatCurrency(campaign.costPerAction) }}</td>
+                        <td class="col-metric">{{ formatPercent(campaign.ctr) }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Total</td>
+                        <td class="col-metric">-</td>
+                        <td class="col-metric">{{ formatNumber(totals.impressions) }}</td>
+                        <td class="col-metric">{{ formatNumber(totals.clicks) }}</td>
+                        <td class="col-metric">{{ formatNumber(totals.installs, 2) }}</td>
+                        <td class="col-metric">{{ formatNumber(totals.inAppActions, 2) }}</td>
+                        <td class="col-metric">-</td>
+                        <td class="col-metric">-</td>
+                        <td class="col-metric">{{ formatPercent(totals.ctr) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- 分页控件 -->
+            <div class="pagination">
+                <div class="page-size">
+                    <span>Show rows</span>
+                    <div class="select-div">
+                        <span>{{ pageSize }}</span>
+                        <span class="material-symbols-outlined">arrow_drop_down</span>
+                    </div>
+
+                    <!-- <select v-model="pageSize" @change="currentPage = 1">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select> -->
+                </div>
+                <div class="page-info">
+                    <span>{{ startRow }}-{{ endRow }} of {{ filteredCampaigns.length }}</span>
+                </div>
+                <div class="page-nav">
+                    <span class="material-symbols-outlined" @click="currentPage = 1">first_page</span>
+                    <span class="material-symbols-outlined" @click="currentPage--">chevron_left</span>
+                    <span class="material-symbols-outlined" @click="currentPage++">chevron_right</span>
+                    <span class="material-symbols-outlined" @click="currentPage = totalPages">last_page</span>
+                    <!-- <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--">‹</button>
+                    <button class="page-btn" :disabled="currentPage === totalPages" @click="currentPage++">›</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

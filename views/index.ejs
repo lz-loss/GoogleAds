@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Ads 广告系列报表</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- 第1行：通知栏 -->
+        <div class="header">
+            <div class="header-left">
+                <div class="menu-icon">
+                    <span class="material-symbols-outlined" role="img" aria-hidden="true">close</span>
+                </div>
+                <div class="lockup-logo" role="presentation">
+                    <svg class="lockup-ads-logo" enable-background="new 0 0 192 192" height="192" viewBox="0 0 192 192"
+                        width="192" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <rect fill="none" height="192" width="192"></rect>
+                            <g>
+                                <rect fill="#FBBC04" height="58.67"
+                                    transform="matrix(0.5 -0.866 0.866 0.5 -46.2127 103.666)" width="117.33" x="8"
+                                    y="62.52"></rect>
+                                <path
+                                    d="M180.07,127.99L121.4,26.38c-8.1-14.03-26.04-18.84-40.07-10.74c-14.03,8.1-18.84,26.04-10.74,40.07 l58.67,101.61c8.1,14.03,26.04,18.83,40.07,10.74C183.36,159.96,188.16,142.02,180.07,127.99z"
+                                    fill="#4285F4"></path>
+                                <circle cx="37.34" cy="142.66" fill="#34A853" r="29.33">
+                                </circle>
+                            </g>
+                        </g>
+                    </svg>
+                    <svg class="lockup-google-logo" height="24" viewBox="0 0 74 24" width="74"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24zm15.76-2c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52zm28.58-8.03h-.09c-.57-.68-1.67-1.3-3.06-1.3C47.53 6.19 45 8.72 45 12c0 3.26 2.53 5.81 5.43 5.81 1.39 0 2.49-.62 3.06-1.32h.09v.81c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49h-2.42v1zm-2.93 8.03c-1.76 0-3.1-1.5-3.1-3.52 0-2.05 1.34-3.52 3.1-3.52 1.74 0 3.1 1.5 3.1 3.54.01 2.03-1.36 3.5-3.1 3.5zM38 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52zM58 .24h2.51v17.57H58zm10.26 15.28c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.76 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"
+                            fill="#5f6368"></path>
+                    </svg>
+                    <span class="lockup-brand">Ads</span>
+                </div>
+                <div class="account-selector">
+                    <span class="account-id">1124-3-mcc</span>
+                    <span class="account-phone">078-970-0966</span>
+                    <span class="material-symbols-outlined">arrow_drop_down</span>
+                </div>
+                <div class="search-box">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" placeholder="Search for a page or campaign" class="search-input">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn">
+                    <span
+                        class="material-symbols-outlined material-icon-i material-icons-extended _ngcontent-awn-AWSM-16"
+                        role="img" aria-hidden="true">responsive_layout</span>
+                    <span class="btn-text">Appearance</span>
+                </button>
+                <button class="header-btn">
+                    <span class="material-symbols-outlined">refresh</span>
+                    <span class="btn-text">Refresh</span>
+                </button>
+                <button class="header-btn">
+                    <span class="material-symbols-outlined">help</span>
+                    <span class="btn-text">Help</span>
+                </button>
+                <button class="header-btn notification-btn">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="notification-badge">!</span>
+                    <span class="btn-text">Notifications</span>
+                </button>
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-connect">
+                            <div class="user-phone">98-770-0086</div>
+                            <div class="user-email">1124-3-mcc</div>
+                        </div>
+                        <div class="user-name">seanuan@gmail.com</div>
+                    </div>
+                    <div class="user-avatar">
+                        D
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第2行：视图和广告系列选择器 -->
+        <div class="view-campaign-bar">
+            <div class="view-campaign-left">
+                <button class="view-btn">
+                    <div>
+                        <span style="color: #5f6368; font-size: 0.75rem; letter-spacing: 0.03rem;">View (2
+                            filters)</span>
+                        <span style="display: flex; flex-direction: row; justify-content: center;">
+                            <span style="color: #3c4043; font-weight: 600;"
+                                class="material-symbols-outlined">home</span>
+                            <span
+                                style="padding: 3px 0 0 5px; color: #3c4043; font-size: 0.84rem; font-weight: 600; letter-spacing: 0.03rem;">All
+                                campaigns</span>
+                        </span>
+                    </div>
+                    <span class="material-symbols-outlined"
+                        style="padding-left: 4px; font-size: 24px; padding-right: 0px;">arrow_drop_down</span>
+                </button>
+                <button class="campaign-view-btn">
+                    <div>
+                        <span style="color: #5f6368; font-size: 0.75rem; letter-spacing: 0.03rem;">Campaigns (15)</span>
+                        <span
+                            style="padding: 3px 0 0 0px; color: #3c4043; font-size: 0.84rem; font-weight: 600; letter-spacing: 0.03rem;">Select
+                            a campaign</span>
+                    </div>
+                    <span class="material-symbols-outlined"
+                        style="padding-left: 6px; font-size: 24px; padding-right: 0px;">arrow_drop_down</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 第3行：过滤栏 -->
+        <div class="filter-bar-hd">
+            <div class="filter-left">
+                <span class="filter-label">Filters</span>
+                <span class="filter-item">
+                    <span>Campaign status:</span>
+                    <span class="filter-value">All</span>
+                </span>
+                <span class="filter-item">
+                    <span>Ad group status:</span>
+                    <span class="filter-value">Enabled, Paused</span>
+                </span>
+                <button class="add-filter-btn">
+                    <span>Add filter</span>
+                </button>
+            </div>
+            <div class="filter-right">
+                <button class="save-filter-btn">
+                    <span class="material-symbols-outlined">save</span>
+                    <span style="font-size: 12px; font-weight: 500;">Save</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 第4行：工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="campaign-selector">
+                    <button class="selector-btn">
+                        <div>
+                            <span>2</span>
+                            <span>Unsaved</span>
+                        </div>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <span class="material-symbols-outlined">Edit</span>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button class="tool-btn tool-btn-2item">
+                    <span class="material-symbols-outlined">file_download</span>
+                    <span>Download</span>
+                </button>
+                <button class="tool-btn tool-btn-2item">
+                    <span class="material-symbols-outlined">access_time</span>
+                    <span>Schedule</span>
+                </button>
+                <button class="tool-btn tool-btn-2item">
+                    <span class="material-symbols-outlined">feedback</span>
+                    <span>Feedback</span>
+                </button>
+                <div class="divider" style="height: 56px; margin: 0 10px;"></div>
+                <button class="tool-btn tool-item-black">
+                    <span>Reset</span>
+                </button>
+                <button class="tool-btn tool-item-blue">
+                    <span>Save</span>
+                </button>
+                <button class="tool-btn tool-item-blue">
+                    <span>Save as</span>
+                </button>
+                <button class="tool-btn tool-item-blue">
+                    <span>Add to dashboard</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 第3行：日期选择栏 -->
+        <div class="date-bar">
+            <div class="date-controls">
+                <div class="date-range">
+                    <div style="color: #757575;">
+                        <span class="material-symbols-outlined">Undo</span>
+                        <label>Undo</label>
+                    </div>
+                    <div>
+                        <span class="material-symbols-outlined">Redo</span>
+                        <label>Redo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="compare-controls">
+                <div class="all_accounts">
+                    <input type="text" v-model="accountText" @input="saveAccountText" class="account-input"
+                        placeholder="2 accounts">
+                    <span class="material-symbols-outlined">Edit</span>
+                </div>
+                <div class="divider _ngcontent-awn-GINSU-22"></div>
+                <div class="date-select">
+                    <div>Yesterday</div>
+                    <div>
+                        <div>
+                            <span>{{ yesterdayDate }}</span>
+                            <span class="material-symbols-outlined" style="color: #5f637b;">arrow_drop_down</span>
+                        </div>
+                        <div style="color: rgb(60 64 67 / 38%);">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider _ngcontent-awn-GINSU-22"></div>
+                <div style="color: #5f637b; margin-right: 24px;">
+                    <span class="material-symbols-outlined" style="font-size: 25px;">filter_alt</span>
+                    <div style="font-size: 8px;">Filter</div>
+                </div>
+                <div>
+                    <span style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 40px;
+                            height: 40px;
+                            line-height: 40px;
+                            text-align: center;
+                            border-top-left-radius: 20px;
+                            border-bottom-left-radius: 20px;
+                            background-color: #5f6368;
+                            color: #fff;
+                            ">
+                        <span class="material-symbols-outlined" style="transform: rotate(-90deg);">stat_2</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div>
+                <div class="thead">Filters</div>
+                <input type="text" v-model="filterText" @input="saveFilter" class="field" placeholder="">
+            </div>
+            <div @click="clearFilter" style="cursor: pointer; padding-right: 25px; padding-top: 3px; color: #5f6368;">
+                <span class="material-symbols-outlined">delete</span>
+            </div>
+        </div>
+
+        <!-- 表格区域 -->
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-campaign" style="width: 300px;" @click="sortBy('campaign')">
+                            <div class="th-content" style="justify-content: flex-start;">
+                                <span>Campaign</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.campaign === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('cost')">
+                            <div class="th-content">
+                                <span>Cost</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.cost === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('impressions')">
+                            <div class="th-content">
+                                <span>Impr.</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.impressions === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('clicks')">
+                            <div class="th-content">
+                                <span>Clicks</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.clicks === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('installs')">
+                            <div class="th-content">
+                                <span>Installs</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.installs === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('inAppActions')">
+                            <div class="th-content">
+                                <span>In-app actions</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.inAppActions === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('costPerInstall')">
+                            <div class="th-content">
+                                <span>Cost / Install</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.costPerInstall === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('costPerAction')">
+                            <div class="th-content">
+                                <span>Cost / In-app action</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.costPerInAppActions === 'asc' ?
+                                    'arrow_drop_up' :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('ctr')">
+                            <div class="th-content">
+                                <span>CTR</span>
+                                <span class="material-symbols-outlined">{{ sortOrderList.ctr === 'asc' ? 'arrow_drop_up'
+                                    :
+                                    'arrow_drop_down'
+                                    }}</span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="campaign in paginatedCampaigns" :key="campaign.id"
+                        :class="{ 'selected': campaign.selected }">
+                        <td>{{ campaign.campaign }} </td>
+                        <td class="col-metric">{{ formatCurrency(campaign.cost) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.impressions) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.clicks) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.installs, 2) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.inAppActions, 2) }}</td>
+                        <td class="col-metric">{{ formatCurrency(campaign.costPerInstall) }}</td>
+                        <td class="col-metric">{{ formatCurrency(campaign.costPerInAppActions) }}</td>
+                        <td class="col-metric">{{ formatPercent(campaign.ctr) }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td class="fw500">Total</td>
+                        <td class="col-metric fw500">—</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.impressions) }}</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.clicks) }}</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.installs, 2) }}</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.inAppActions, 2) }}</td>
+                        <td class="col-metric fw500">—</td>
+                        <td class="col-metric fw500">—</td>
+                        <td class="col-metric fw500">{{ formatPercent(totals.ctr) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- 分页控件 -->
+            <div class="pagination">
+                <div class="page-size" style="position: relative;">
+                    <span>Show rows</span>
+                    <div class="select-div" @click="togglePageSizeDropdown">
+                        <span>{{ pageSize }}</span>
+                        <span class="material-symbols-outlined"
+                            :class="{ 'rotated': showPageSizeDropdown }">arrow_drop_down</span>
+                    </div>
+                    <div v-if="showPageSizeDropdown" class="page-size-dropdown"
+                        style="position: absolute; bottom: 0; right: 0; margin-bottom: 0px; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1000; min-width: 60px;">
+                        <div v-for="option in pageSizeOptions" :key="option" @click="setPageSize(option)"
+                            style="padding: 8px 12px; cursor: pointer; background-color: #f5f5f5; background-color: #e0e0e0;">
+                            {{ option }}
+                        </div>
+                    </div>
+                </div>
+                <div class="page-info">
+                    <span>{{ startRow }}-{{ endRow }} of {{ filteredCampaigns.length }}</span>
+                </div>
+                <div class="page-nav">
+                    <span class="material-symbols-outlined" @click="currentPage = 1">first_page</span>
+                    <span class="material-symbols-outlined" @click="currentPage--">chevron_left</span>
+                    <span class="material-symbols-outlined" @click="currentPage++">chevron_right</span>
+                    <span class="material-symbols-outlined" @click="currentPage = totalPages">last_page</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue.js CDN -->
+    <script src="./js/vue.global.js"></script>
+    <script src="./app.js"></script>
+</body>
+
+</html>

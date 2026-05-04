@@ -1,0 +1,24 @@
+{
+  "name": "fbs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "start:node20": "node20/node.exe index.js",
+    "win": "start.bat",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "koa": "^3.1.2",
+    "koa-router": "^14.0.0",
+    "koa-static": "^5.0.0",
+    "koa-views": "^8.1.0",
+    "xlsx": "^0.18.5"
+  }
+}
