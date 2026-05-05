@@ -130,7 +130,7 @@
         <div class="view-campaign-bar">
             <div class="view-campaign-left">
                 <button class="view-btn">
-                    <div>
+                    <div style="position: relative;">
                         <span style="color: #5f6368; font-size: 0.75rem; letter-spacing: 0.03rem;">View (2
                             filters)</span>
                         <span style="display: flex; flex-direction: row; justify-content: center;">
@@ -142,6 +142,7 @@
                     </div>
                     <span class="material-symbols-outlined"
                         style="padding-left: 4px; font-size: 24px; padding-right: 0px;">arrow_drop_down</span>
+                    <div class="blue-line"></div>
                 </button>
                 <button class="campaign-view-btn">
                     <div>
@@ -362,6 +363,16 @@
                                     @click="selectEndDate">
                                     <div class="date-input-label">End date*</div>
                                     <div class="date-input-value">{{ formattedEndDate }}</div>
+                                </div>
+                            </div>
+                            <!-- 月份导航栏 -->
+                            <div class="calendar-nav-bar">
+                                <div class="calendar-nav-month">{{ calendarMonthYear }}</div>
+                                <div class="calendar-nav-buttons">
+                                    <span class="material-symbols-outlined"
+                                        @click="navigateMonth(-1)">chevron_left</span>
+                                    <span class="material-symbols-outlined"
+                                        @click="navigateMonth(1)">chevron_right</span>
                                 </div>
                             </div>
                             <!-- 日历容器 - 可滚动 -->

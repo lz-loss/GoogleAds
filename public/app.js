@@ -394,6 +394,9 @@ createApp({
         nextMonth() {
             this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1, 1);
         },
+        navigateMonth(direction) {
+            this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + direction, 1);
+        },
         // 应用日期筛选
         applyDateRange() {
             this.showDatePicker = false;

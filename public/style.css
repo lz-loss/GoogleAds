@@ -381,14 +381,14 @@ body {
 .view-campaign-left {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .view-btn,
 .campaign-view-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     height: 48px;
     padding: 6px 6px 6px 14px;
     background-color: #fff;
@@ -401,6 +401,18 @@ body {
 .view-btn {
     overflow: hidden;
     padding: 6px 6px 6px 12px;
+    position: relative;
+}
+
+.blue-line {
+    width: 140px;
+    height: 4px;
+    background-color: #1a73e8;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 70px);
 }
 
 .campaign-view-btn {
@@ -1415,6 +1427,39 @@ input:checked+.toggle-slider:before {
 
 .compare-option div.toggled:not(.toggle-circle) .toggle-circle {
     transform: translateX(16px);
+}
+
+/* 月份导航栏 */
+.calendar-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+}
+
+.calendar-nav-month {
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #3c4043;
+}
+
+.calendar-nav-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.calendar-nav-buttons .material-symbols-outlined {
+    font-size: 20px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.calendar-nav-buttons .material-symbols-outlined:hover {
+    background-color: #f5f5f5;
 }
 
 /* 右侧日历 */
