@@ -722,6 +722,7 @@ body {
     padding: 0px;
     background-color: #f5f5f5;
     min-height: 70px;
+    position: relative;
 }
 
 .date-controls {
@@ -1281,4 +1282,369 @@ input:checked+.toggle-slider:before {
     font-weight: 400;
     color: var(--acx-sys-color--on-surface-variant, #5f6368);
     color: var(--acx-sys-color--on-surface, #3c4043);
+}
+
+/* 日期选择弹框样式 */
+.date-picker-dropdown {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    border: 1px solid #dadce0;
+    width: 508px;
+}
+
+.date-picker-container {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.date-picker-content {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    height: 443px;
+}
+
+.date-left-options {
+    width: 240px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-right: 1px solid #e0e0e0;
+}
+
+.date-custom {
+    padding: 8px 16px;
+    height: 57px;
+    line-height: 40px;
+    border-bottom: 1px solid #e0e0e0;
+
+}
+
+.compare-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid #e0e0e0;
+    height: 52px;
+    line-height: 52px;
+}
+
+
+/* 左侧日期选项 */
+.date-options {
+    width: 240px;
+    border-right: 1px solid #e0e0e0;
+    padding: 0;
+    gap: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* 自定义滚动条样式 - 去掉箭头，改成直角 */
+.date-options::-webkit-scrollbar {
+    width: 8px;
+}
+
+.date-options::-webkit-scrollbar-track {
+    background: white;
+}
+
+.date-options::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 0;
+}
+
+.date-options::-webkit-scrollbar-thumb:hover {
+    background: white;
+}
+
+.date-option {
+    padding: 8px 24px;
+    cursor: pointer;
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 14px;
+    color: #3c4043;
+    transition: background-color 0.1s;
+}
+
+.date-option:hover {
+    background-color: #f5f5f5;
+}
+
+.date-option.active {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+}
+
+.compare-label {
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 14px;
+    color: #3c4043;
+}
+
+.compare-option div:not(.toggle-circle) {
+    width: 36px;
+    height: 16px;
+    background-color: #dadce0;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.compare-option div.toggled:not(.toggle-circle) {
+    background-color: #1a73e8;
+}
+
+.toggle-circle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    top: -2px;
+    left: -2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.compare-option div.toggled:not(.toggle-circle) .toggle-circle {
+    transform: translateX(16px);
+}
+
+/* 右侧日历 */
+.calendar-section {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.date-inputs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 0 8px;
+}
+
+.date-input-wrapper {
+    flex: 1;
+    border: 1px solid #dadce0;
+    border-radius: 5px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #80868b;
+}
+
+.date-input-label {
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 12px;
+    color: #5f6368;
+    margin-bottom: 4px;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: white;
+}
+
+.date-input-value {
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 14px;
+    color: #3c4043;
+}
+
+/* 可滚动的日历容器 */
+.calendar-scroll-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* 固定的星期表头 */
+.calendar-weekdays-fixed {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 4px;
+    background-color: white;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 236px;
+}
+
+/* 可滚动的月份列表 */
+.calendar-months-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* 自定义滚动条 - 去掉箭头，直角 */
+.calendar-months-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.calendar-months-scroll::-webkit-scrollbar-track {
+    background: white;
+}
+
+.calendar-months-scroll::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 0;
+}
+
+.calendar-months-scroll::-webkit-scrollbar-thumb:hover {
+    background: white;
+}
+
+/* 单个月份 */
+.calendar-month {
+    margin-bottom: 24px;
+}
+
+/* 月份标题 */
+.calendar-month-title {
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #3c4043;
+    margin-bottom: 8px;
+    padding: 0 8px;
+}
+
+/* 月份标题和第一周同行 */
+.calendar-month-title-inline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #3c4043;
+    padding: 0 8px;
+    display: inline-block;
+    width: 100px;
+    /* 固定宽度 */
+    flex-shrink: 0;
+    line-height: 34px;
+    /* 和日期格子高度一致 */
+}
+
+.weekday {
+    text-align: center;
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 12px;
+    color: #5f6368;
+    padding: 8px 0;
+}
+
+.calendar-days {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+}
+
+.calendar-week {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 0;
+    position: relative;
+
+}
+
+.calendar-week>.calendar-day {
+    min-width: 0;
+}
+
+.calendar-day {
+    text-align: center;
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 12px;
+    color: #3c4043;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+}
+
+.calendar-day:hover:not(.selected):not(.in-range) {
+    background-color: #f5f5f5;
+}
+
+.calendar-day.other-month {
+    visibility: hidden;
+}
+
+.calendar-day.selected {
+    background-color: #1a73e8;
+    color: white;
+    z-index: 2;
+}
+
+.calendar-day.in-range {
+    background-color: #e8f0fe;
+    border-radius: 0;
+}
+
+.calendar-day.start-date {
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+}
+
+.calendar-day.end-date {
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+}
+
+.date-picker-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-family: MyRoboto, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-btn.cancel {
+    background: transparent;
+    color: #1a73e8;
+}
+
+.action-btn.cancel:hover {
+    background-color: #f5f5f5;
+}
+
+.action-btn.apply {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.action-btn.apply:hover {
+    background-color: #1765cc;
 }
