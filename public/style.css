@@ -272,11 +272,88 @@ body {
     justify-content: flex-start;
 }
 
+.page-refresh-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(0.5px);
+    cursor: progress;
+}
+
+.page-refresh-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    overflow: hidden;
+    background: #e8f0fe;
+}
+
+.page-refresh-progress::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -35%;
+    width: 35%;
+    height: 100%;
+    background: #1a73e8;
+    animation: refresh-progress 1.2s ease-in-out infinite;
+}
+
 .header-btn:hover {
     background-color: #E3E4E5;
 }
+
+.header-btn:disabled {
+    cursor: default;
+    opacity: 0.72;
+}
+
 .header-btn .material-symbols-outlined {
     font-size: 24px;
+}
+
+.refresh-btn.refreshing .refresh-icon {
+    animation: refresh-spin 0.8s linear infinite;
+}
+
+@keyframes refresh-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes refresh-progress {
+    0% {
+        left: -35%;
+        width: 35%;
+    }
+
+    55% {
+        left: 40%;
+        width: 45%;
+    }
+
+    100% {
+        left: 100%;
+        width: 35%;
+    }
+}
+
+@keyframes metric-loading {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
 }
 
 .btn-text {
@@ -1115,6 +1192,54 @@ input:checked+.toggle-slider:before {
     text-align: right;
     font-weight: 400;
     color: #3c4043;
+}
+
+.data-table.is-reloading tbody td.col-metric,
+.data-table.is-reloading tfoot td.col-metric {
+    position: relative;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+}
+
+.data-table.is-reloading tbody td:first-child {
+    position: relative;
+    color: transparent;
+    text-decoration: none;
+}
+
+.data-table.is-reloading tbody td:first-child::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    width: min(260px, calc(100% - 32px));
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e8eaed 0%, #f8fafd 45%, #e8eaed 100%);
+    background-size: 180% 100%;
+    transform: translateY(-50%);
+    animation: metric-loading 0.9s ease-in-out infinite;
+}
+
+.data-table.is-reloading tbody td.col-metric::after,
+.data-table.is-reloading tfoot td.col-metric::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    width: 58px;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e8eaed 0%, #f8fafd 45%, #e8eaed 100%);
+    background-size: 180% 100%;
+    transform: translateY(-50%);
+    animation: metric-loading 0.9s ease-in-out infinite;
+}
+
+.data-table.is-reloading tfoot td.col-metric::after {
+    background: linear-gradient(90deg, #dadce0 0%, #f1f3f4 45%, #dadce0 100%);
+    background-size: 180% 100%;
 }
 
 .data-table th span {

@@ -12,6 +12,10 @@
 
 <body>
     <div id="app">
+        <div v-if="isRefreshing" class="page-refresh-overlay" aria-live="polite" aria-label="Refreshing page">
+            <div class="page-refresh-progress"></div>
+        </div>
+
         <!-- 第1行：通知栏 -->
         <!-- <div class="notification-bar">
             <span class="info-icon">ℹ️</span>
@@ -98,9 +102,16 @@
                         role="img" aria-hidden="true">responsive_layout</span>
                     <span class="btn-text">Appearance</span>
                 </button>
-                <button class="header-btn">
-                    <span class="material-symbols-outlined">refresh</span>
-                    <span class="btn-text">Refresh</span>
+                <button
+                    type="button"
+                    class="header-btn refresh-btn"
+                    :class="{ refreshing: isRefreshing }"
+                    :disabled="isRefreshing"
+                    :aria-busy="isRefreshing.toString()"
+                    @click="refreshPage"
+                >
+                    <span class="material-symbols-outlined refresh-icon">refresh</span>
+                    <span class="btn-text">{{ isRefreshing ? 'Refreshing' : 'Refresh' }}</span>
                 </button>
                 <button class="header-btn">
                     <span class="material-symbols-outlined">help</span>
@@ -455,7 +466,7 @@
 
         <!-- 表格区域 -->
         <div class="table-wrapper">
-            <table class="data-table">
+            <table class="data-table" :class="{ 'is-reloading': isRefreshing }">
                 <thead>
                     <tr>
                         <th class="col-campaign" style="width: 300px;" @click="sortBy('campaign')">

@@ -3,8 +3,9 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            showRightPanel: false, 
+            showRightPanel: false,
             showNotification: true,
+            isRefreshing: false,
             compareEnabled: false,
             dateRange: '2025年12月9日 - 2026年3月24日',
             pageSize: 10,
@@ -485,19 +486,38 @@ createApp({
         },
         async loadTableData() {
             try {
-                const response = await fetch('/assets/tableData.json');
+                const response = await fetch('/assets/tableData.json', { cache: 'no-store' });
                 let data = await response.json();
                 const today = new Date();
                 data = data.map((item, index) => {
                     const date = new Date(today);
                     date.setDate(date.getDate() - index);
-                    return {
+                    const campaign = {
                         ...item,
+                        id: item.id || `${item.campaign}-${index}`,
                         date: date.toISOString()
                     };
+                    return campaign;
                 });
                 this.campaigns = JSON.parse(JSON.stringify(data));
             } catch (error) {
+            }
+        },
+        async refreshPage() {
+            if (this.isRefreshing) return;
+            this.isRefreshing = true;
+            this.showDatePicker = false;
+            this.showPageSizeDropdown = false;
+            try {
+                await this.$nextTick();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                await Promise.all([
+                    this.loadTableData(),
+                    new Promise(resolve => setTimeout(resolve, 1400))
+                ]);
+                this.currentPage = 1;
+            } finally {
+                this.isRefreshing = false;
             }
         },
         togglePageSizeDropdown() {
