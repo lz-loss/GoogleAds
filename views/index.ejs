@@ -572,6 +572,9 @@
                         <td class="col-metric">{{ formatCurrency(campaign.costPerInAppActions) }}</td>
                         <td class="col-metric">{{ formatPercent(campaign.ctr) }}</td>
                     </tr>
+                    <tr v-if="!isRefreshing && filteredCampaigns.length === 0" class="empty-state-row">
+                        <td colspan="9" class="empty-state-cell">No statistics match your filters</td>
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr class="total-row">

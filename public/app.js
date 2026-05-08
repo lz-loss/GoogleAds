@@ -55,13 +55,14 @@ createApp({
         filteredCampaigns() {
             let result = this.campaigns;
             if (this.startDate && this.endDate) {
-                const start = new Date(this.startDate);
-                const end = new Date(this.endDate);
+                const start = this.parseLocalDate(this.startDate);
+                const end = this.parseLocalDate(this.endDate);
+                if (!start || !end) return result;
                 start.setHours(0, 0, 0, 0);
                 end.setHours(23, 59, 59, 999);
                 result = result.filter(campaign => {
-                    if (!campaign.date) return true;
-                    const campaignDate = new Date(campaign.date);
+                    const campaignDate = this.parseLocalDate(campaign.date);
+                    if (!campaignDate) return false;
                     return campaignDate >= start && campaignDate <= end;
                 });
             }
@@ -484,18 +485,36 @@ createApp({
             this.accountText = '2 accounts';
             localStorage.removeItem('accountText');
         },
+        parseLocalDate(value) {
+            if (!value) return null;
+
+            if (value instanceof Date) {
+                if (Number.isNaN(value.getTime())) return null;
+                return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+            }
+
+            const text = String(value).trim();
+            const dateOnlyMatch = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (dateOnlyMatch) {
+                return new Date(
+                    Number(dateOnlyMatch[1]),
+                    Number(dateOnlyMatch[2]) - 1,
+                    Number(dateOnlyMatch[3])
+                );
+            }
+
+            const parsed = new Date(text);
+            if (Number.isNaN(parsed.getTime())) return null;
+            return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+        },
         async loadTableData() {
             try {
                 const response = await fetch('/assets/tableData.json', { cache: 'no-store' });
                 let data = await response.json();
-                const today = new Date();
                 data = data.map((item, index) => {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - index);
                     const campaign = {
                         ...item,
-                        id: item.id || `${item.campaign}-${index}`,
-                        date: date.toISOString()
+                        id: item.id || `${item.campaign}-${item.date || 'no-date'}-${index}`
                     };
                     return campaign;
                 });

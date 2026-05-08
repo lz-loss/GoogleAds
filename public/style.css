@@ -1194,6 +1194,19 @@ input:checked+.toggle-slider:before {
     color: #3c4043;
 }
 
+.data-table .empty-state-row:hover {
+    background-color: #fff;
+}
+
+.data-table .empty-state-cell {
+    width: 100% !important;
+    height: 48px;
+    text-align: center;
+    color: #3c4043;
+    font-size: 14px;
+    font-weight: 400;
+}
+
 .data-table.is-reloading tbody td.col-metric,
 .data-table.is-reloading tfoot td.col-metric {
     position: relative;
