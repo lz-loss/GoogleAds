@@ -9,7 +9,74 @@ if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
 
-function convertByType(value, type) {
+function padDatePart(value) {
+    return String(value).padStart(2, '0');
+}
+
+function normalizeDateValue(value) {
+    if (value === null || value === undefined || value === '') {
+        return '';
+    }
+
+    if (typeof value === 'number') {
+        const parsedCode = XLSX.SSF.parse_date_code(value);
+        if (parsedCode) {
+            return [
+                parsedCode.y,
+                padDatePart(parsedCode.m),
+                padDatePart(parsedCode.d)
+            ].join('-');
+        }
+    }
+
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+        return [
+            value.getFullYear(),
+            padDatePart(value.getMonth() + 1),
+            padDatePart(value.getDate())
+        ].join('-');
+    }
+
+    const text = String(value).trim();
+    const slashMatch = text.match(/^(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})$/);
+    if (slashMatch) {
+        let first = Number(slashMatch[1]);
+        const second = Number(slashMatch[2]);
+        let third = Number(slashMatch[3]);
+        let year = first;
+        let month = second;
+        let day = third;
+
+        if (slashMatch[1].length !== 4) {
+            year = third;
+            month = first;
+            day = second;
+        }
+
+        if (year < 100) {
+            year += 2000;
+        }
+
+        return `${year}-${padDatePart(month)}-${padDatePart(day)}`;
+    }
+
+    const parsed = new Date(text);
+    if (!Number.isNaN(parsed.getTime())) {
+        return [
+            parsed.getFullYear(),
+            padDatePart(parsed.getMonth() + 1),
+            padDatePart(parsed.getDate())
+        ].join('-');
+    }
+
+    return text;
+}
+
+function convertByType(value, type, key = '') {
+    if (String(key).toLowerCase() === 'date') {
+        return normalizeDateValue(value);
+    }
+
     if (value === null || value === undefined || value === '') {
         if (type === 'int' || type === 'integer') {
             return 0;
@@ -44,10 +111,10 @@ async function processExcelFile(filePath) {
     console.log(`Processing file: ${filePath}`);
 
     try {
-        const workbook = XLSX.readFile(filePath);
+        const workbook = XLSX.readFile(filePath, { cellDates: true });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: '' });
 
         if (jsonData.length < 4) {
             console.error(`File ${filePath} doesn't have enough rows for conversion.`);
@@ -88,7 +155,7 @@ async function processExcelFile(filePath) {
                 if (key && !key.startsWith('//')) {
                     const value = row[j];
                     const type = types[j] || 'string';
-                    obj[key] = convertByType(value, type);
+                    obj[key] = convertByType(value, type, key);
                 }
             }
 

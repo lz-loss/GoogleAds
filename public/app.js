@@ -13,6 +13,8 @@ createApp({
             sortKey: '',
             sortOrderList: {
                 campaign: 'desc',
+                date: 'desc',
+                status: 'desc',
                 cost: 'desc',
                 impressions: 'desc',
                 clicks: 'desc',
@@ -23,11 +25,32 @@ createApp({
                 ctr: 'desc',
             },
             selectAll: false,
+            searchText: localStorage.getItem('searchText') || '',
             filterText: localStorage.getItem('filterText') || '',
             accountText: localStorage.getItem('accountText') || '2 accounts',
+            statusFilter: localStorage.getItem('statusFilter') || 'all',
+            highIntentOnly: localStorage.getItem('highIntentOnly') === 'true',
+            showFilterMenu: false,
+            showColumnsPanel: false,
+            detailCampaign: null,
+            toastMessage: '',
+            toastTimer: null,
+            metricColumns: [
+                { key: 'cost', label: 'Cost', type: 'currency', visible: true },
+                { key: 'impressions', label: 'Impr.', type: 'number', visible: true },
+                { key: 'clicks', label: 'Clicks', type: 'number', visible: true },
+                { key: 'installs', label: 'Installs', type: 'decimal', visible: true },
+                { key: 'inAppActions', label: 'In-app actions', type: 'decimal', visible: true },
+                { key: 'costPerInstall', label: 'Cost / Install', type: 'currency', visible: true },
+                { key: 'costPerInAppActions', label: 'Cost / In-app action', type: 'currency', visible: true },
+                { key: 'ctr', label: 'CTR', type: 'percent', visible: true },
+            ],
             campaigns: [
                 {
+                    id: 'seed-1',
                     campaign: '0254-PH Space Race-Kilay',
+                    status: 'enabled',
+                    statusLabel: 'Enabled',
                     cost: 7.93,
                     impressions: 32,
                     clicks: 3,
@@ -39,9 +62,8 @@ createApp({
                     selected: false
                 },
             ],
-            // 日期选择相关状态
             showDatePicker: false,
-            selectedDateOption: 'yesterday',
+            selectedDateOption: 'last30Days',
             startDate: null,
             endDate: null,
             calendarMonth: new Date(),
@@ -50,36 +72,44 @@ createApp({
         }
     },
     computed: {
+        visibleMetricColumns() {
+            const columns = this.metricColumns.filter(column => column.visible);
+            return columns.length ? columns : this.metricColumns.slice(0, 1);
+        },
         filteredCampaigns() {
+            const query = `${this.searchText} ${this.filterText}`.trim().toLowerCase();
             let result = this.campaigns;
-            // 日期筛选
+
             if (this.startDate && this.endDate) {
                 const start = new Date(this.startDate);
                 const end = new Date(this.endDate);
                 start.setHours(0, 0, 0, 0);
                 end.setHours(23, 59, 59, 999);
-
                 result = result.filter(campaign => {
                     if (!campaign.date) return true;
-                    const campaignDate = new Date(campaign.date);
+                    const campaignDate = this.parseDateOnly(campaign.date);
+                    if (!campaignDate) return true;
                     return campaignDate >= start && campaignDate <= end;
                 });
             }
+
+            if (this.statusFilter !== 'all') {
+                result = result.filter(campaign => campaign.status === this.statusFilter);
+            }
+
+            if (this.highIntentOnly) {
+                result = result.filter(campaign => Number(campaign.clicks) > 100);
+            }
+
+            if (query) {
+                result = result.filter(campaign => this.matchesQuery(campaign, query));
+            }
+
             return result;
-            // if (!this.filterText) {
-            //     return this.campaigns;
-            // }
-            // const filter = this.filterText.toLowerCase();
-            // return this.campaigns.filter(campaign =>
-            //     campaign.name.toLowerCase().includes(filter)
-            // );
         },
-        // 计算12个月的日历
         calendarMonths() {
             const months = [];
-            // 以当前选择的月份为中心，生成12个月
             const baseDate = this.calendarMonth;
-            // 向前推6个月，然后展示12个月
             for (let i = -6; i < 6; i++) {
                 const targetDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + i, 1);
                 const calendarData = this.getCalendarWeeks(targetDate);
@@ -105,7 +135,6 @@ createApp({
             return this.formatDate(this.endDate);
         },
         dropdownStyle() {
-            // 计算下拉框位置
             if (!this.showDatePicker || !this.$refs.dateSelectRef) {
                 return {};
             }
@@ -121,19 +150,15 @@ createApp({
             if (!this.sortKey) {
                 return this.filteredCampaigns;
             }
-
             const key = this.sortKey;
-            const order = this.sortOrderList[key];
-
+            const order = this.sortOrderList[key] || 'desc';
             return [...this.filteredCampaigns].sort((a, b) => {
                 let aVal = a[key];
                 let bVal = b[key];
-
                 if (typeof aVal === 'string') {
                     aVal = aVal.toLowerCase();
-                    bVal = bVal.toLowerCase();
+                    bVal = String(bVal || '').toLowerCase();
                 }
-
                 if (aVal < bVal) return order === 'asc' ? -1 : 1;
                 if (aVal > bVal) return order === 'asc' ? 1 : -1;
                 return 0;
@@ -145,17 +170,23 @@ createApp({
             return this.sortedCampaigns.slice(start, end);
         },
         totalPages() {
-            return Math.ceil(this.filteredCampaigns.length / this.pageSize);
+            return Math.max(1, Math.ceil(this.filteredCampaigns.length / this.pageSize));
         },
         showPagination() {
-            // 只有当数据行数超过每页显示行数时才显示分页
             return this.filteredCampaigns.length > this.pageSize;
         },
         startRow() {
+            if (this.filteredCampaigns.length === 0) return 0;
             return (this.currentPage - 1) * this.pageSize + 1;
         },
         endRow() {
             return Math.min(this.currentPage * this.pageSize, this.filteredCampaigns.length);
+        },
+        selectedCampaigns() {
+            return this.campaigns.filter(campaign => campaign.selected);
+        },
+        pageSelectionState() {
+            return this.paginatedCampaigns.length > 0 && this.paginatedCampaigns.every(campaign => campaign.selected);
         },
         yesterdayDate() {
             const yesterday = new Date();
@@ -164,14 +195,12 @@ createApp({
             return yesterday.toLocaleDateString('en-US', options);
         },
         totals() {
-
             const result = this.filteredCampaigns.reduce((acc, campaign) => {
-                acc.cost += campaign.cost;
-                acc.impressions += campaign.impressions;
-                acc.clicks += campaign.clicks;
-                acc.installs += campaign.installs;
-                acc.inAppActions += campaign.inAppActions;
-                acc.ctr += 0;
+                acc.cost += Number(campaign.cost) || 0;
+                acc.impressions += Number(campaign.impressions) || 0;
+                acc.clicks += Number(campaign.clicks) || 0;
+                acc.installs += Number(campaign.installs) || 0;
+                acc.inAppActions += Number(campaign.inAppActions) || 0;
                 return acc;
             }, {
                 cost: 0,
@@ -179,43 +208,33 @@ createApp({
                 clicks: 0,
                 installs: 0,
                 inAppActions: 0,
-                costPerAction: 0,
+                costPerInstall: 0,
+                costPerInAppActions: 0,
                 ctr: 0,
             });
 
-            // 计算 ctr 平均值
-            if (this.filteredCampaigns.length > 0 && Number(result.impressions) > 0) {
-                result.ctr = (Number(result.clicks) / Number(result.impressions)).toFixed(2);
-            } else {
-                result.ctr = '0.00';
-            }
-
+            result.costPerInstall = result.installs ? result.cost / result.installs : 0;
+            result.costPerInAppActions = result.inAppActions ? result.cost / result.inAppActions : 0;
+            result.ctr = result.impressions ? (result.clicks / result.impressions) * 100 : 0;
             return result;
         }
     },
     methods: {
-        // 计算单个月的日历
         getCalendarWeeks(targetDate) {
             const year = targetDate.getFullYear();
             const month = targetDate.getMonth();
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
-            const startDay = firstDay.getDay(); // 0-6, 0是周日
-
+            const startDay = firstDay.getDay();
             const weeks = [];
             let currentWeek = [];
             let firstWeekCurrentMonthDays = 0;
-
-            // 上个月的日期
             for (let i = 0; i < startDay; i++) {
                 const d = new Date(year, month, -startDay + i + 1);
                 currentWeek.push({ date: d, isCurrentMonth: false });
             }
-
-            // 当月的日期
             for (let i = 1; i <= lastDay.getDate(); i++) {
                 currentWeek.push({ date: new Date(year, month, i), isCurrentMonth: true });
-                // 计算第一周有多少个当月日期
                 if (weeks.length === 0) {
                     firstWeekCurrentMonthDays++;
                 }
@@ -224,29 +243,44 @@ createApp({
                     currentWeek = [];
                 }
             }
-
-            // 下个月的日期
             if (currentWeek.length > 0) {
                 for (let i = 1; currentWeek.length < 7; i++) {
                     currentWeek.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
                 }
                 weeks.push(currentWeek);
             }
-
             return {
                 weeks: weeks,
                 firstWeekCurrentMonthDays: firstWeekCurrentMonthDays
             };
         },
-        // 格式化日期
         formatDate(date) {
             const d = new Date(date);
-            const month = d.getMonth() + 1;
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const month = monthNames[d.getMonth()];
             const day = d.getDate();
             const year = d.getFullYear();
-            return `${month}/${day}/${year}`;
+            return `${month} ${day}, ${year}`;
         },
-        // 检查是否是同一天
+        getDateOptionLabel(option) {
+            const labels = {
+                'today': 'Today',
+                'yesterday': 'Yesterday',
+                'thisWeekSunSat': 'This week (Sun - Today)',
+                'thisWeekMonSun': 'This week (Mon - Today)',
+                'last7Days': 'Last 7 days (up to yesterday)',
+                'lastWeekSunSat': 'Last week (Sun - Sat)',
+                'lastWeekMonSun': 'Last week (Mon - Sun)',
+                'lastBusinessWeek': 'Last business week (Mon - Fri)',
+                'last14Days': 'Last 14 days (up to yesterday)',
+                'thisMonth': 'This month',
+                'last30Days': 'Last 30 days',
+                'lastMonth': 'Last month',
+                'allTime': 'All time',
+                'custom': 'Custom'
+            };
+            return labels[option] || 'Custom';
+        },
         isSameDay(date1, date2) {
             if (!date1 || !date2) return false;
             const d1 = new Date(date1);
@@ -255,29 +289,34 @@ createApp({
                 d1.getMonth() === d2.getMonth() &&
                 d1.getDate() === d2.getDate();
         },
-        // 检查日期是否在选中范围内
         isInRange(date) {
             if (!this.startDate || !this.endDate) return false;
             const d = new Date(date);
             return d >= new Date(this.startDate) && d <= new Date(this.endDate);
         },
-        // 切换日期选择弹窗
         toggleDatePicker(event) {
             event.stopPropagation();
             this.showDatePicker = !this.showDatePicker;
             if (this.showDatePicker) {
-                // 如果已经选择了日期，日历显示选中日期所在的月份
-                if (this.startDate) {
-                    this.calendarMonth = new Date(this.startDate);
-                } else {
-                    this.calendarMonth = new Date();
-                }
+                this.calendarMonth = this.startDate ? new Date(this.startDate) : new Date();
+                this.$nextTick(() => {
+                    this.scrollToSelectedDate();
+                });
             }
         },
-        // 点击外部关闭
+        scrollToSelectedDate() {
+            const scrollContainer = document.querySelector('.calendar-months-scroll');
+            if (!scrollContainer || !this.startDate) return;
+            const selectedDayElement = document.querySelector('.calendar-day.selected');
+            if (selectedDayElement) {
+                selectedDayElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        },
         handleClickOutside(event) {
             if (this.showDatePicker) {
-                // 检查点击是否在日期选择器内部
                 const datePickerEl = document.querySelector('.date-picker-dropdown');
                 const dateSelectEl = this.$refs.dateSelectRef;
                 if (datePickerEl && !datePickerEl.contains(event.target) &&
@@ -286,20 +325,49 @@ createApp({
                 }
             }
         },
-        // 选择日期选项
         selectDateOption(option) {
             this.selectedDateOption = option;
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-
             switch (option) {
-                case 'yesterday':
+                case 'today':
+                    this.startDate = new Date(today);
+                    this.endDate = new Date(today);
+                    break;
+                case 'yesterday': {
                     const yesterday = new Date(today);
                     yesterday.setDate(yesterday.getDate() - 1);
                     this.startDate = new Date(yesterday);
                     this.endDate = new Date(yesterday);
                     break;
-                case 'lastWeekSunSat':
+                }
+                case 'thisWeekSunSat': {
+                    const thisWeekStartSun = new Date(today);
+                    const dayOfWeekSun = thisWeekStartSun.getDay();
+                    thisWeekStartSun.setDate(thisWeekStartSun.getDate() - dayOfWeekSun);
+                    this.startDate = new Date(thisWeekStartSun);
+                    this.endDate = new Date(today);
+                    break;
+                }
+                case 'thisWeekMonSun': {
+                    const thisWeekStartMon = new Date(today);
+                    const dowMon = thisWeekStartMon.getDay();
+                    const diffToMon = dowMon === 0 ? 6 : dowMon - 1;
+                    thisWeekStartMon.setDate(thisWeekStartMon.getDate() - diffToMon);
+                    this.startDate = new Date(thisWeekStartMon);
+                    this.endDate = new Date(today);
+                    break;
+                }
+                case 'last7Days': {
+                    const last7Days = new Date(today);
+                    last7Days.setDate(last7Days.getDate() - 7);
+                    this.startDate = last7Days;
+                    const yesterdayFor7 = new Date(today);
+                    yesterdayFor7.setDate(yesterdayFor7.getDate() - 1);
+                    this.endDate = yesterdayFor7;
+                    break;
+                }
+                case 'lastWeekSunSat': {
                     const lastWeekSunSat = new Date(today);
                     const dayOfWeek = lastWeekSunSat.getDay();
                     const diffToLastSun = dayOfWeek === 0 ? 7 : dayOfWeek;
@@ -309,7 +377,8 @@ createApp({
                     lastSat.setDate(lastSat.getDate() + 6);
                     this.endDate = lastSat;
                     break;
-                case 'lastWeekMonSun':
+                }
+                case 'lastWeekMonSun': {
                     const lastWeekMonSun = new Date(today);
                     const dow = lastWeekMonSun.getDay();
                     const diffToLastMon1 = dow === 1 ? 7 : (dow === 0 ? 6 : dow - 1);
@@ -319,7 +388,8 @@ createApp({
                     lastSun.setDate(lastSun.getDate() + 6);
                     this.endDate = lastSun;
                     break;
-                case 'lastBusinessWeek':
+                }
+                case 'lastBusinessWeek': {
                     const lastBusinessWeekStart = new Date(today);
                     const d = lastBusinessWeekStart.getDay();
                     const diffToLastMon2 = d === 1 ? 7 : (d === 0 ? 6 : d - 1);
@@ -329,7 +399,8 @@ createApp({
                     lastFri.setDate(lastFri.getDate() + 4);
                     this.endDate = lastFri;
                     break;
-                case 'last14Days':
+                }
+                case 'last14Days': {
                     const last14Days = new Date(today);
                     last14Days.setDate(last14Days.getDate() - 14);
                     this.startDate = last14Days;
@@ -337,31 +408,40 @@ createApp({
                     yesterdayFor14.setDate(yesterdayFor14.getDate() - 1);
                     this.endDate = yesterdayFor14;
                     break;
+                }
                 case 'thisMonth':
-                    const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-                    this.startDate = thisMonthStart;
-                    const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                    this.endDate = thisMonthEnd;
+                    this.startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    this.endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                     break;
-                case 'last30Days':
+                case 'last30Days': {
                     const last30Days = new Date(today);
                     last30Days.setDate(last30Days.getDate() - 29);
                     this.startDate = last30Days;
                     this.endDate = new Date(today);
                     break;
+                }
                 case 'lastMonth':
-                    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                    this.startDate = lastMonth;
-                    const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
-                    this.endDate = lastMonthEnd;
+                    this.startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    this.endDate = new Date(today.getFullYear(), today.getMonth(), 0);
                     break;
                 case 'allTime':
                     this.startDate = new Date(2000, 0, 1);
                     this.endDate = new Date();
                     break;
+                case 'custom':
+                    break;
+            }
+            if (this.startDate) {
+                this.calendarMonth = new Date(this.startDate);
+            }
+            this.currentPage = 1;
+            this.$nextTick(() => {
+                this.scrollToSelectedDate();
+            });
+            if (option !== 'custom') {
+                this.applyDateRange();
             }
         },
-        // 选择日历中的日期
         selectCalendarDate(date) {
             if (this.selectingStartDate) {
                 this.startDate = new Date(date);
@@ -377,8 +457,8 @@ createApp({
                 this.selectingStartDate = true;
             }
             this.selectedDateOption = 'custom';
+            this.calendarMonth = new Date(date);
         },
-        // 切换开始日期选择
         selectStartDate() {
             this.selectingStartDate = true;
             this.selectedDateOption = 'custom';
@@ -387,44 +467,46 @@ createApp({
             this.selectingStartDate = false;
             this.selectedDateOption = 'custom';
         },
-        // 日历导航
-        prevMonth() {
-            this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() - 1, 1);
-        },
-        nextMonth() {
-            this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1, 1);
-        },
         navigateMonth(direction) {
             this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + direction, 1);
         },
-        // 应用日期筛选
         applyDateRange() {
+            this.currentPage = 1;
             this.showDatePicker = false;
-            // 这里可以添加日期筛选逻辑
         },
-        // 取消
         cancelDateRange() {
             this.showDatePicker = false;
         },
         formatCurrency(value) {
-            if (value === 0 || value === undefined) return '-';
-            // return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-            // 手动添加美元符号和千位分隔符，确保在所有浏览器上显示一致
-            const fixedValue = value.toFixed(2);
+            if (value === 0 || value === undefined || value === null) return '-';
+            const fixedValue = Number(value).toFixed(2);
             const parts = fixedValue.split('.');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             return '$' + parts.join('.');
         },
         formatNumber(value, decimals = 0) {
-            if (value === 0 || value === undefined) return '-';
-            return value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            if (value === 0 || value === undefined || value === null) return '-';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
         },
         formatPercent(value) {
-            if (value === 0 || value === undefined) return '-';
-            // 确保 value 是数字类型
+            if (value === 0 || value === undefined || value === null) return '-';
             const numValue = Number(value);
             if (isNaN(numValue)) return '-';
             return `${numValue.toFixed(2)}%`;
+        },
+        displayMetricValue(row, column) {
+            const value = row[column.key];
+            switch (column.type) {
+                case 'currency':
+                    return this.formatCurrency(value);
+                case 'percent':
+                    return this.formatPercent(value);
+                case 'decimal':
+                    return this.formatNumber(value, 2);
+                case 'number':
+                default:
+                    return this.formatNumber(value);
+            }
         },
         sortBy(key) {
             if (this.sortKey === key) {
@@ -434,20 +516,170 @@ createApp({
                 this.sortOrderList[key] = 'desc';
             }
         },
-        toggleSelectAll() {
-            this.campaigns.forEach(campaign => {
-                campaign.selected = this.selectAll;
+        parseDateOnly(value) {
+            if (!value) return null;
+            if (value instanceof Date && !Number.isNaN(value.getTime())) {
+                return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+            }
+
+            if (typeof value === 'number') {
+                return this.parseExcelSerialDate(value);
+            }
+
+            const text = String(value).trim();
+            if (/^\d{5,6}$/.test(text)) {
+                return this.parseExcelSerialDate(Number(text));
+            }
+            const slashMatch = text.match(/^(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})$/);
+            if (slashMatch) {
+                let first = Number(slashMatch[1]);
+                const second = Number(slashMatch[2]);
+                let third = Number(slashMatch[3]);
+                let year = first;
+                let month = second;
+                let day = third;
+
+                if (slashMatch[1].length !== 4) {
+                    year = third;
+                    month = first;
+                    day = second;
+                }
+
+                if (year < 100) {
+                    year += 2000;
+                }
+
+                return new Date(year, month - 1, day);
+            }
+
+            const parsed = new Date(text);
+            if (Number.isNaN(parsed.getTime())) return null;
+            return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+        },
+        parseExcelSerialDate(serial) {
+            if (!Number.isFinite(serial)) return null;
+            const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+            const date = new Date(excelEpoch.getTime() + Math.floor(serial) * 86400000);
+            return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+        },
+        toDateKey(date) {
+            if (!date) return '';
+            return [
+                date.getFullYear(),
+                String(date.getMonth() + 1).padStart(2, '0'),
+                String(date.getDate()).padStart(2, '0')
+            ].join('-');
+        },
+        formatDisplayDate(value) {
+            const date = this.parseDateOnly(value);
+            if (!date) return '-';
+            return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+        },
+        toggleSelectPage(checked) {
+            this.paginatedCampaigns.forEach(campaign => {
+                campaign.selected = checked;
             });
         },
+        toggleCampaignStatus(campaign) {
+            campaign.status = campaign.status === 'enabled' ? 'paused' : 'enabled';
+            campaign.statusLabel = campaign.status === 'enabled' ? 'Enabled' : 'Paused';
+            this.showToast(`${campaign.statusLabel}: ${campaign.campaign}`);
+        },
+        openDetails(campaign) {
+            this.detailCampaign = campaign;
+        },
+        setStatusFilter(status) {
+            this.statusFilter = status;
+            localStorage.setItem('statusFilter', status);
+            this.currentPage = 1;
+            this.showFilterMenu = false;
+        },
+        toggleHighIntentFilter() {
+            this.highIntentOnly = !this.highIntentOnly;
+            localStorage.setItem('highIntentOnly', this.highIntentOnly);
+            this.currentPage = 1;
+            this.showFilterMenu = false;
+        },
+        matchesQuery(campaign, query) {
+            const searchable = [
+                campaign.campaign,
+                campaign.date,
+                campaign.displayDate,
+                campaign.statusLabel,
+                campaign.cost,
+                campaign.impressions,
+                campaign.clicks,
+                campaign.installs,
+                campaign.inAppActions,
+                campaign.ctr
+            ].join(' ').toLowerCase();
+            return searchable.includes(query);
+        },
+        buildCsv() {
+            const columns = [
+                { key: 'campaign', label: 'Campaign' },
+                { key: 'displayDate', label: 'Date' },
+                { key: 'statusLabel', label: 'Status' },
+                ...this.visibleMetricColumns.map(column => ({ key: column.key, label: column.label }))
+            ];
+            const rows = this.filteredCampaigns.map(campaign => {
+                return columns.map(column => {
+                    const value = campaign[column.key] === undefined ? '' : campaign[column.key];
+                    return `"${String(value).replace(/"/g, '""')}"`;
+                }).join(',');
+            });
+            return [columns.map(column => `"${column.label}"`).join(','), ...rows].join('\n');
+        },
         downloadReport() {
-            alert('下载功能开发中...');
+            const csv = this.buildCsv();
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'google-ads-report.csv';
+            link.click();
+            URL.revokeObjectURL(url);
+            this.showToast(`Downloaded ${this.filteredCampaigns.length} rows`);
+        },
+        refreshData() {
+            this.loadTableData();
+            this.showToast('Report refreshed');
+        },
+        showToast(message) {
+            this.toastMessage = message;
+            clearTimeout(this.toastTimer);
+            this.toastTimer = setTimeout(() => {
+                this.toastMessage = '';
+            }, 2400);
+        },
+        resetDemoState() {
+            this.searchText = '';
+            this.filterText = '';
+            this.statusFilter = 'all';
+            this.highIntentOnly = false;
+            this.currentPage = 1;
+            this.detailCampaign = null;
+            localStorage.removeItem('searchText');
+            localStorage.removeItem('filterText');
+            localStorage.setItem('statusFilter', 'all');
+            localStorage.removeItem('highIntentOnly');
+            this.selectDateOption('last30Days');
+            this.showToast('Report view reset');
+        },
+        saveSearchText() {
+            localStorage.setItem('searchText', this.searchText);
+            this.currentPage = 1;
         },
         saveFilter() {
             localStorage.setItem('filterText', this.filterText);
+            this.currentPage = 1;
         },
         clearFilter() {
             this.filterText = '';
+            this.searchText = '';
             localStorage.removeItem('filterText');
+            localStorage.removeItem('searchText');
+            this.currentPage = 1;
         },
         saveAccountText() {
             localStorage.setItem('accountText', this.accountText);
@@ -456,24 +688,32 @@ createApp({
             this.accountText = '2 accounts';
             localStorage.removeItem('accountText');
         },
-
-        // 从 tableData.json 加载数据
+        normalizeCampaign(item, index) {
+            const today = new Date();
+            let parsedDate = this.parseDateOnly(item.date);
+            if (!parsedDate) {
+                parsedDate = new Date(today);
+                parsedDate.setDate(parsedDate.getDate() - (index % 21));
+            }
+            const status = index % 5 === 0 ? 'paused' : 'enabled';
+            const dateKey = this.toDateKey(parsedDate);
+            return {
+                ...item,
+                id: item.id || `campaign-${index}`,
+                status,
+                statusLabel: status === 'enabled' ? 'Enabled' : 'Paused',
+                selected: false,
+                date: dateKey,
+                displayDate: this.formatDisplayDate(dateKey),
+            };
+        },
         async loadTableData() {
             try {
                 const response = await fetch('/assets/tableData.json');
-                let data = await response.json();
-                // 为数据添加日期字段（用于演示筛选功能）
-                const today = new Date();
-                data = data.map((item, index) => {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - index);
-                    return {
-                        ...item,
-                        date: date.toISOString()
-                    };
-                });
-                this.campaigns = JSON.parse(JSON.stringify(data));
+                const data = await response.json();
+                this.campaigns = data.map((item, index) => this.normalizeCampaign(item, index));
             } catch (error) {
+                this.showToast('Unable to load report data');
             }
         },
         togglePageSizeDropdown() {
@@ -481,25 +721,31 @@ createApp({
         },
         setPageSize(size) {
             this.pageSize = size;
-            this.currentPage = 1; // 重置到第一页
+            this.currentPage = 1;
             this.showPageSizeDropdown = false;
+        },
+        goToPage(page) {
+            this.currentPage = Math.min(Math.max(page, 1), this.totalPages);
         },
     },
     async mounted() {
         await this.loadTableData();
-        // 初始化默认日期为昨天
-        this.selectDateOption('yesterday');
-        // 添加点击外部关闭监听
+        this.selectDateOption('last30Days');
         document.addEventListener('click', this.handleClickOutside);
     },
     beforeUnmount() {
-        // 移除监听器
         document.removeEventListener('click', this.handleClickOutside);
+        clearTimeout(this.toastTimer);
     },
     watch: {
+        filteredCampaigns() {
+            if (this.currentPage > this.totalPages) {
+                this.currentPage = this.totalPages;
+            }
+        },
         campaigns: {
             handler(newValue) {
-                this.selectAll = newValue.every(campaign => campaign.selected);
+                this.selectAll = newValue.length > 0 && newValue.every(campaign => campaign.selected);
             },
             deep: true
         }

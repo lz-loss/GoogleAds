@@ -88,25 +88,26 @@
                 </div>
                 <div class="search-box">
                     <span class="material-symbols-outlined search-icon">search</span>
-                    <input type="text" placeholder="Search for a page or campaign" class="search-input">
+                    <input type="text" v-model="searchText" @input="saveSearchText"
+                        placeholder="Search for a page or campaign" class="search-input">
                 </div>
             </div>
             <div class="header-right">
-                <button class="header-btn">
+                <button class="header-btn" @click="showToast('Appearance options opened')">
                     <span
                         class="material-symbols-outlined material-icon-i material-icons-extended _ngcontent-awn-AWSM-16"
                         role="img" aria-hidden="true">responsive_layout</span>
                     <span class="btn-text">Appearance</span>
                 </button>
-                <button class="header-btn">
+                <button class="header-btn" @click="refreshData">
                     <span class="material-symbols-outlined">refresh</span>
                     <span class="btn-text">Refresh</span>
                 </button>
-                <button class="header-btn">
+                <button class="header-btn" @click="showToast('Help center panel opened')">
                     <span class="material-symbols-outlined">help</span>
                     <span class="btn-text">Help</span>
                 </button>
-                <button class="header-btn notification-btn">
+                <button class="header-btn notification-btn" @click="showToast('1 recommendation needs review')">
                     <span class="material-symbols-outlined">notifications</span>
                     <span class="notification-badge">!</span>
                     <span class="btn-text">Notifications</span>
@@ -168,12 +169,12 @@
                     <span>Ad group status:</span>
                     <span class="filter-value">Enabled, Paused</span>
                 </span>
-                <button class="add-filter-btn">
+                <button class="add-filter-btn" @click="showFilterMenu = !showFilterMenu">
                     <span>Add filter</span>
                 </button>
             </div>
             <div class="filter-right">
-                <button class="save-filter-btn">
+                <button class="save-filter-btn" @click="showToast('Filters saved')">
                     <span class="material-symbols-outlined">save</span>
                     <span style="font-size: 12px; font-weight: 500;">Save</span>
                 </button>
@@ -187,25 +188,25 @@
                 <div class="campaign-selector">
                     <button class="selector-btn">
                         <div>
-                            <span style="font-size: 18px; font-weight: 500;">2</span>
-                            <span style="font-size: 12px; font-weight: 500;">Unsaved</span>
+                            <span style="font-size: 18px; font-weight: 500;">{{ selectedCampaigns.length || 2 }}</span>
+                            <span style="font-size: 12px; font-weight: 500;">{{ selectedCampaigns.length ? 'Selected' : 'Unsaved' }}</span>
                         </div>
                         <span class="material-symbols-outlined">arrow_drop_down</span>
                     </button>
-                    <span class="material-symbols-outlined" style="color: #5f6368;">Edit</span>
+                    <span class="material-symbols-outlined" style="color: #5f6368;" @click="showColumnsPanel = !showColumnsPanel">Edit</span>
                 </div>
             </div>
             <div class="toolbar-right">
                 <div class="toolbar-right-icons">
-                    <button class="tool-btn tool-btn-2item">
+                    <button class="tool-btn tool-btn-2item" @click="downloadReport">
                         <span class="material-symbols-outlined">file_download</span>
                         <span>Download</span>
                     </button>
-                    <button class="tool-btn tool-btn-2item">
+                    <button class="tool-btn tool-btn-2item" @click="showToast('Report schedule draft opened')">
                         <span class="material-symbols-outlined">access_time</span>
                         <span>Schedule</span>
                     </button>
-                    <button class="tool-btn tool-btn-2item">
+                    <button class="tool-btn tool-btn-2item" @click="showToast('Feedback dialog opened')">
                         <span class="material-symbols-outlined">feedback</span>
                         <span>Feedback</span>
                     </button>
@@ -213,16 +214,16 @@
                 <div class="divider" style="height: 56px; margin: 0 10px;"></div>
                 <div class="toolbar-right-editbtn">
 
-                    <button class="tool-btn tool-item-black">
+                    <button class="tool-btn tool-item-black" @click="resetDemoState">
                         <span>Reset</span>
                     </button>
-                    <button class="tool-btn tool-item-blue">
+                    <button class="tool-btn tool-item-blue" @click="showToast('Report saved')">
                         <span>Save</span>
                     </button>
-                    <button class="tool-btn tool-item-blue">
+                    <button class="tool-btn tool-item-blue" @click="showToast('Saved as a new report')">
                         <span>Save as</span>
                     </button>
-                    <button class="tool-btn tool-item-blue">
+                    <button class="tool-btn tool-item-blue" @click="showToast('Added to dashboard')">
                         <span>Add to dashboard</span>
                     </button>
                 </div>
@@ -251,7 +252,7 @@
                 </div>
                 <div class="divider _ngcontent-awn-GINSU-22"></div>
                 <div class="date-select" ref="dateSelectRef">
-                    <div>Yesterday</div>
+                    <div>{{ getDateOptionLabel(selectedDateOption) }}</div>
                     <div @click="toggleDatePicker" style="cursor: pointer;">
                         <div>
                             <span>{{ formattedStartDate }}{{ formattedStartDate && formattedEndDate &&
@@ -265,8 +266,8 @@
                     </div>
                 </div>
                 <div class="divider _ngcontent-awn-GINSU-22"></div>
-                <div
-                    style="color: #5f637b; margin-right: 24px; display: flex; align-items: center; flex-direction: column; gap: 2px;">
+                <div @click="showFilterMenu = !showFilterMenu"
+                    style="color: #5f637b; margin-right: 24px; display: flex; align-items: center; flex-direction: column; gap: 2px; cursor: pointer;">
                     <span class="material-symbols-outlined" style="font-size: 25px;">filter_alt</span>
                     <div style="font-size: 8px;">Filter</div>
                 </div>
@@ -289,125 +290,148 @@
             </div>
 
             <!-- 日期选择下拉框 -->
-            <div v-if="showDatePicker" class="date-picker-dropdown" @click.stop :style="dropdownStyle">
-                <div class="date-picker-container">
-                    <div class="date-picker-content">
-                        <!-- 左侧选项列表 -->
-                        <div class="date-left-options">
-                            <div class="date-custom" :class="{ active: selectedDateOption === 'custom' }"
-                                @click="selectDateOption('custom')">
-                                Custom
-                            </div>
+            <transition name="date-picker">
+                <div v-if="showDatePicker" class="date-picker-dropdown" @click.stop :style="dropdownStyle">
+                    <div class="date-picker-container">
+                        <div class="date-picker-content">
+                            <!-- 左侧选项列表 -->
+                            <div class="date-left-options">
+                                <div class="date-custom" :class="{ active: selectedDateOption === 'custom' }"
+                                    @click="selectDateOption('custom')">
+                                    Custom
+                                </div>
 
-                            <div class="date-options">
-                                <div class="date-option" :class="{ active: selectedDateOption === 'today' }"
-                                    @click="selectDateOption('today')">
-                                    Today
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'yesterday' }"
-                                    @click="selectDateOption('yesterday')">
-                                    Yesterday
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'lastWeekSunSat' }"
-                                    @click="selectDateOption('lastWeekSunSat')">
-                                    Last week (Sun - Sat)
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'lastWeekMonSun' }"
-                                    @click="selectDateOption('lastWeekMonSun')">
-                                    Last week (Mon - Sun)
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'lastBusinessWeek' }"
-                                    @click="selectDateOption('lastBusinessWeek')">
-                                    Last business week (Mon - Fri)
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'last14Days' }"
-                                    @click="selectDateOption('last14Days')">
-                                    Last 14 days (up to yesterday)
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'thisMonth' }"
-                                    @click="selectDateOption('thisMonth')">
-                                    This month
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'last30Days' }"
-                                    @click="selectDateOption('last30Days')">
-                                    Last 30 days
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'lastMonth' }"
-                                    @click="selectDateOption('lastMonth')">
-                                    Last month
-                                </div>
-                                <div class="date-option" :class="{ active: selectedDateOption === 'allTime' }"
-                                    @click="selectDateOption('allTime')">
-                                    All time
-                                </div>
-                            </div>
-                            <div class="compare-option">
-                                <span class="compare-label">Compare</span>
-                                <div :class="{ toggled: compareEnabled }" @click="compareEnabled = !compareEnabled">
-                                    <div class="toggle-circle"></div>
-                                </div>
-                            </div>
+                                <div class="date-options">
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'today' }"
+                                        @click="selectDateOption('today')">
+                                        Today
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'yesterday' }"
+                                        @click="selectDateOption('yesterday')">
+                                        Yesterday
+                                    </div>
+                                    <div class="date-option"
+                                        :class="{ active: selectedDateOption === 'thisWeekSunSat' }"
+                                        @click="selectDateOption('thisWeekSunSat')">
+                                        This week (Sun - Today)
+                                    </div>
+                                    <div class="date-option"
+                                        :class="{ active: selectedDateOption === 'thisWeekMonSun' }"
+                                        @click="selectDateOption('thisWeekMonSun')">
+                                        This week (Mon - Today)
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'last7Days' }"
+                                        @click="selectDateOption('last7Days')">
+                                        Last 7 days (up to yesterday)
+                                    </div>
 
-                        </div>
-                        <!-- 右侧日历 -->
-                        <div class="calendar-section">
-                            <!-- 日期输入框 -->
-                            <div class="date-inputs">
-                                <div class="date-input-wrapper" :class="{ active: selectingStartDate }"
-                                    @click="selectStartDate">
-                                    <div class="date-input-label">Start date*</div>
-                                    <div class="date-input-value">{{ formattedStartDate }}</div>
+                                    <div class="date-option"
+                                        :class="{ active: selectedDateOption === 'lastWeekSunSat' }"
+                                        @click="selectDateOption('lastWeekSunSat')">
+                                        Last week (Sun - Sat)
+                                    </div>
+                                    <div class="date-option"
+                                        :class="{ active: selectedDateOption === 'lastWeekMonSun' }"
+                                        @click="selectDateOption('lastWeekMonSun')">
+                                        Last week (Mon - Sun)
+                                    </div>
+                                    <div class="date-option"
+                                        :class="{ active: selectedDateOption === 'lastBusinessWeek' }"
+                                        @click="selectDateOption('lastBusinessWeek')">
+                                        Last business week (Mon - Fri)
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'last14Days' }"
+                                        @click="selectDateOption('last14Days')">
+                                        Last 14 days (up to yesterday)
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'thisMonth' }"
+                                        @click="selectDateOption('thisMonth')">
+                                        This month
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'last30Days' }"
+                                        @click="selectDateOption('last30Days')">
+                                        Last 30 days
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'lastMonth' }"
+                                        @click="selectDateOption('lastMonth')">
+                                        Last month
+                                    </div>
+                                    <div class="date-option" :class="{ active: selectedDateOption === 'allTime' }"
+                                        @click="selectDateOption('allTime')">
+                                        All time
+                                    </div>
                                 </div>
-                                <div style="line-height: 49px;">—</div>
-                                <div class="date-input-wrapper" :class="{ active: !selectingStartDate }"
-                                    @click="selectEndDate">
-                                    <div class="date-input-label">End date*</div>
-                                    <div class="date-input-value">{{ formattedEndDate }}</div>
+                                <div class="compare-option">
+                                    <span class="compare-label">Compare</span>
+                                    <div :class="{ toggled: compareEnabled }" @click="compareEnabled = !compareEnabled">
+                                        <div class="toggle-circle"></div>
+                                    </div>
                                 </div>
+
                             </div>
-                            <!-- 月份导航栏 -->
-                            <div class="calendar-nav-bar">
-                                <div class="calendar-nav-month">{{ calendarMonthYear }}</div>
-                                <div class="calendar-nav-buttons">
-                                    <span class="material-symbols-outlined"
-                                        @click="navigateMonth(-1)">chevron_left</span>
-                                    <span class="material-symbols-outlined"
-                                        @click="navigateMonth(1)">chevron_right</span>
+                            <!-- 右侧日历 -->
+                            <div class="calendar-section">
+                                <!-- 日期输入框 -->
+                                <div class="date-inputs">
+                                    <div class="date-input-wrapper" :class="{ active: selectingStartDate }"
+                                        @click="selectStartDate">
+                                        <div class="date-input-label">Start date*</div>
+                                        <div class="date-input-value">{{ formattedStartDate }}</div>
+                                    </div>
+                                    <div style="line-height: 49px;">—</div>
+                                    <div class="date-input-wrapper" :class="{ active: !selectingStartDate }"
+                                        @click="selectEndDate">
+                                        <div class="date-input-label">End date*</div>
+                                        <div class="date-input-value">{{ formattedEndDate }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- 日历容器 - 可滚动 -->
-                            <div class="calendar-scroll-container">
-                                <!-- 星期表头（固定在顶部） -->
-                                <div class="calendar-weekdays-fixed">
-                                    <div class="weekday">S</div>
-                                    <div class="weekday">M</div>
-                                    <div class="weekday">T</div>
-                                    <div class="weekday">W</div>
-                                    <div class="weekday">T</div>
-                                    <div class="weekday">F</div>
-                                    <div class="weekday">S</div>
+                                <!-- 月份导航栏 -->
+                                <div class="calendar-nav-bar">
+                                    <div class="calendar-nav-month">{{ calendarMonthYear }}</div>
+                                    <div class="calendar-nav-buttons">
+                                        <span class="material-symbols-outlined"
+                                            @click="navigateMonth(-1)">chevron_left</span>
+                                        <span class="material-symbols-outlined"
+                                            @click="navigateMonth(1)">chevron_right</span>
+                                    </div>
                                 </div>
-                                <!-- 可滚动的月份列表 -->
-                                <div class="calendar-months-scroll">
-                                    <div v-for="monthData in calendarMonths" :key="monthData.date"
-                                        class="calendar-month">
-                                        <!-- 普通情况：月份标题单独一行 -->
-                                        <div v-if="!monthData.showTitleInline" class="calendar-month-title">{{
-                                            monthData.monthYear }}</div>
-                                        <div class="calendar-days">
-                                            <div v-for="(week, weekIndex) in monthData.weeks" :key="week"
-                                                class="calendar-week">
-                                                <!-- 如果需要和第一周同行的情况 -->
-                                                <div v-if="monthData.showTitleInline && weekIndex === 0"
-                                                    class="calendar-month-title-inline">{{ monthData.monthYear }}</div>
-                                                <div v-for="day in week" :key="day.date" class="calendar-day" :class="{
+                                <!-- 日历容器 - 可滚动 -->
+                                <div class="calendar-scroll-container">
+                                    <!-- 星期表头（固定在顶部） -->
+                                    <div class="calendar-weekdays-fixed">
+                                        <div class="weekday">S</div>
+                                        <div class="weekday">M</div>
+                                        <div class="weekday">T</div>
+                                        <div class="weekday">W</div>
+                                        <div class="weekday">T</div>
+                                        <div class="weekday">F</div>
+                                        <div class="weekday">S</div>
+                                    </div>
+                                    <!-- 可滚动的月份列表 -->
+                                    <div class="calendar-months-scroll">
+                                        <div v-for="monthData in calendarMonths" :key="monthData.date"
+                                            class="calendar-month">
+                                            <!-- 普通情况：月份标题单独一行 -->
+                                            <div v-if="!monthData.showTitleInline" class="calendar-month-title">{{
+                                                monthData.monthYear }}</div>
+                                            <div class="calendar-days">
+                                                <div v-for="(week, weekIndex) in monthData.weeks" :key="week"
+                                                    class="calendar-week">
+                                                    <!-- 如果需要和第一周同行的情况 -->
+                                                    <div v-if="monthData.showTitleInline && weekIndex === 0"
+                                                        class="calendar-month-title-inline">{{ monthData.monthYear }}
+                                                    </div>
+                                                    <div v-for="day in week" :key="day.date" class="calendar-day"
+                                                        :class="{
                                         'other-month': !day.isCurrentMonth,
-                                        'selected': isSameDay(day.date, startDate) || isSameDay(day.date, endDate),
+                                        'selected': isSameDay(day.date, startDate),
                                         'in-range': isInRange(day.date),
-                                        'start-date': isSameDay(day.date, startDate),
-                                        'end-date': isSameDay(day.date, endDate)
+                                        'start-date': isSameDay(day.date, startDate) && !isSameDay(startDate, endDate),
+                                        'end-date': isSameDay(day.date, endDate) && !isSameDay(startDate, endDate),
+                                        'single-date': isSameDay(day.date, startDate) && isSameDay(startDate, endDate)
                                     }" @click="selectCalendarDate(day.date)">
-                                                    {{ day.date.getDate() }}
+                                                        <span class="day-number">{{ day.date.getDate() }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -415,24 +439,54 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- 操作按钮 -->
-                    <div class="date-picker-actions">
-                        <button class="action-btn cancel" @click="cancelDateRange">Cancel</button>
-                        <button class="action-btn apply" @click="applyDateRange">Apply</button>
+                        <!-- 操作按钮 -->
+                        <div class="date-picker-actions" v-if="startDate && endDate">
+                            <button class="action-btn cancel" @click="cancelDateRange">Cancel</button>
+                            <button class="action-btn apply" @click="applyDateRange">Apply</button>
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
+        </transition>
 
         <!-- 筛选栏 -->
         <div class="filter-bar">
             <div>
                 <div class="thead">Filters</div>
-                <input type="text" v-model="filterText" @input="saveFilter" class="field" placeholder="">
+                <input type="text" v-model="filterText" @input="saveFilter" class="field"
+                    placeholder="Campaign name, status, or metric">
             </div>
             <div @click="clearFilter" style="cursor: pointer; padding-right: 25px; padding-top: 3px; color: #5f6368;">
                 <span class="material-symbols-outlined">delete</span>
+            </div>
+        </div>
+
+        <div class="inline-popovers">
+            <div v-if="showFilterMenu" class="popover-panel filter-popover">
+                <div class="popover-title">Add filter</div>
+                <button class="filter-choice" @click="setStatusFilter('all')">
+                    <span>Campaign status</span>
+                    <strong>All</strong>
+                </button>
+                <button class="filter-choice" @click="setStatusFilter('enabled')">
+                    <span>Campaign status</span>
+                    <strong>Enabled</strong>
+                </button>
+                <button class="filter-choice" @click="setStatusFilter('paused')">
+                    <span>Campaign status</span>
+                    <strong>Paused</strong>
+                </button>
+                <button class="filter-choice" @click="toggleHighIntentFilter">
+                    <span>Performance</span>
+                    <strong>{{ highIntentOnly ? 'Show all' : 'Clicks > 100' }}</strong>
+                </button>
+            </div>
+            <div v-if="showColumnsPanel" class="popover-panel columns-popover">
+                <div class="popover-title">Columns</div>
+                <label v-for="column in metricColumns" :key="column.key" class="column-choice">
+                    <input type="checkbox" v-model="column.visible">
+                    <span>{{ column.label }}</span>
+                </label>
             </div>
         </div>
 
@@ -441,7 +495,10 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th class="col-campaign" style="width: 300px;" @click="sortBy('campaign')">
+                        <th class="col-select">
+                            <input type="checkbox" :checked="pageSelectionState" @change="toggleSelectPage($event.target.checked)">
+                        </th>
+                        <th class="col-campaign" @click="sortBy('campaign')">
                             <div class="th-content" style="justify-content: flex-start;">
                                 <span class="span-title-child">Campaign</span>
                                 <span v-if="sortKey === 'campaign'"
@@ -453,115 +510,77 @@
                                 <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
-                        <th class="col-metric">
-                            <div class="th-content">
-                                <span class="span-title-child">Cost</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-metric" @click="sortBy('impressions')">
-                            <div class="th-content">
-                                <span v-if="sortKey === 'impressions'"
-                                    class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList.impressions === 'asc' ?
+                        <th class="col-date" @click="sortBy('date')">
+                            <div class="th-content" style="justify-content: flex-start;">
+                                <span v-if="sortKey === 'date'" class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.date === 'asc' ?
                                     'arrow_upward' :
                                     'arrow_downward'
                                     }}</span>
-                                <span class="span-title-child">Impr.</span>
+                                <span class="span-title-child">Date</span>
                                 <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
-                        <th class="col-metric" @click="sortBy('clicks')">
+                        <th class="col-status" @click="sortBy('status')">
+                            <div class="th-content" style="justify-content: flex-start;">
+                                <span class="span-title-child">Status</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th v-for="column in visibleMetricColumns" :key="column.key" class="col-metric"
+                            @click="sortBy(column.key)">
                             <div class="th-content">
-                                <span v-if="sortKey === 'clicks'" class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList.clicks === 'asc' ?
+                                <span v-if="sortKey === column.key" class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList[column.key] === 'asc' ?
                                     'arrow_upward' :
                                     'arrow_downward'
                                     }}</span>
-                                <span class="span-title-child">Clicks</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-metric" @click="sortBy('installs')">
-                            <div class="th-content">
-                                <span v-if="sortKey === 'installs'"
-                                    class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList.installs === 'asc' ?
-                                    'arrow_upward' :
-                                    'arrow_downward'
-                                    }}</span>
-                                <span class="span-title-child">Installs</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-metric" @click="sortBy('inAppActions')">
-                            <div class="th-content">
-                                <span v-if="sortKey === 'inAppActions'"
-                                    class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList.inAppActions === 'asc' ?
-                                    'arrow_upward' :
-                                    'arrow_downward'
-                                    }}</span>
-                                <span class="span-title-child">In-app actions</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-metric">
-                            <div class="th-content">
-                                <span class="span-title-child">Cost / Install</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-metric">
-                            <div class="th-content">
-                                <span class="span-title-child">Cost / In-app action</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-metric" @click="sortBy('ctr')">
-                            <div class="th-content">
-                                <span v-if="sortKey === 'ctr'" class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList.ctr === 'asc' ?
-                                    'arrow_upward' :
-                                    'arrow_downward'
-                                    }}</span>
-                                <span class="span-title-child">CTR</span>
+                                <span class="span-title-child">{{ column.label }}</span>
                                 <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="paginatedCampaigns.length === 0">
+                        <td class="empty-state" :colspan="visibleMetricColumns.length + 4">
+                            <span class="material-symbols-outlined">filter_alt_off</span>
+                            <strong>No campaigns match the current filters</strong>
+                            <button class="action-btn apply" @click="resetDemoState">Reset filters</button>
+                        </td>
+                    </tr>
                     <tr v-for="campaign in paginatedCampaigns" :key="campaign.id"
                         :class="{ 'selected': campaign.selected }">
-                        <td>{{ campaign.campaign }} </td>
-                        <td class="col-metric">{{ formatCurrency(campaign.cost) }}</td>
-                        <td class="col-metric">{{ formatNumber(campaign.impressions) }}</td>
-                        <td class="col-metric">{{ formatNumber(campaign.clicks) }}</td>
-                        <td class="col-metric">{{ formatNumber(campaign.installs, 2) }}</td>
-                        <td class="col-metric">{{ formatNumber(campaign.inAppActions, 2) }}</td>
-                        <td class="col-metric">{{ formatCurrency(campaign.costPerInstall) }}</td>
-                        <td class="col-metric">{{ formatCurrency(campaign.costPerInAppActions) }}</td>
-                        <td class="col-metric">{{ formatPercent(campaign.ctr) }}</td>
+                        <td class="col-select">
+                            <input type="checkbox" v-model="campaign.selected" @click.stop>
+                        </td>
+                        <td class="col-campaign" @click="openDetails(campaign)">{{ campaign.campaign }} </td>
+                        <td class="col-date">{{ campaign.displayDate }}</td>
+                        <td class="col-status">
+                            <button class="status-pill" :class="campaign.status" @click.stop="toggleCampaignStatus(campaign)">
+                                <span class="status-dot"></span>{{ campaign.statusLabel }}
+                            </button>
+                        </td>
+                        <td v-for="column in visibleMetricColumns" :key="column.key" class="col-metric">
+                            {{ displayMetricValue(campaign, column) }}
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="total-row">
+                        <td class="col-select"></td>
                         <td class="fw500">Total</td>
-                        <td class="col-metric fw500">—</td>
-                        <td class="col-metric fw500">{{ formatNumber(totals.impressions) }}</td>
-                        <td class="col-metric fw500">{{ formatNumber(totals.clicks) }}</td>
-                        <td class="col-metric fw500">{{ formatNumber(totals.installs, 2) }}</td>
-                        <td class="col-metric fw500">{{ formatNumber(totals.inAppActions, 2) }}</td>
-                        <td class="col-metric fw500">—</td>
-                        <td class="col-metric fw500">—</td>
-                        <td class="col-metric fw500">{{ formatPercent(totals.ctr) }}</td>
+                        <td class="fw500">—</td>
+                        <td class="fw500">{{ filteredCampaigns.length }} campaigns</td>
+                        <td v-for="column in visibleMetricColumns" :key="column.key" class="col-metric fw500">
+                            {{ displayMetricValue(totals, column) }}
+                        </td>
                     </tr>
                 </tfoot>
             </table>
 
             <!-- 分页控件 -->
-            <div class="pagination" v-if="showPagination">
+            <div class="pagination" v-if="filteredCampaigns.length > 0">
                 <div class="page-size" style="position: relative;">
                     <span>Show rows</span>
                     <div class="select-div" @click="togglePageSizeDropdown">
@@ -581,13 +600,42 @@
                     <span>{{ startRow }}-{{ endRow }} of {{ filteredCampaigns.length }}</span>
                 </div>
                 <div class="page-nav">
-                    <span class="material-symbols-outlined" @click="currentPage = 1">first_page</span>
-                    <span class="material-symbols-outlined" @click="currentPage--">chevron_left</span>
-                    <span class="material-symbols-outlined" @click="currentPage++">chevron_right</span>
-                    <span class="material-symbols-outlined" @click="currentPage = totalPages">last_page</span>
+                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === 1 }" @click="goToPage(1)">first_page</span>
+                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === 1 }" @click="goToPage(currentPage - 1)">chevron_left</span>
+                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === totalPages }" @click="goToPage(currentPage + 1)">chevron_right</span>
+                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === totalPages }" @click="goToPage(totalPages)">last_page</span>
                 </div>
             </div>
         </div>
+
+        <aside v-if="detailCampaign" class="detail-drawer">
+            <div class="drawer-header">
+                <div>
+                    <span>Campaign</span>
+                    <strong>{{ detailCampaign.campaign }}</strong>
+                </div>
+                <button class="icon-button" @click="detailCampaign = null">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="drawer-status">
+                <span class="drawer-date">{{ detailCampaign.displayDate }}</span>
+                <button class="status-pill" :class="detailCampaign.status" @click="toggleCampaignStatus(detailCampaign)">
+                    <span class="status-dot"></span>{{ detailCampaign.statusLabel }}
+                </button>
+                <button class="tool-btn tool-item-blue" @click="showToast('Campaign draft opened')">Edit</button>
+            </div>
+            <div class="drawer-metrics">
+                <div v-for="column in metricColumns" :key="column.key" class="drawer-metric">
+                    <span>{{ column.label }}</span>
+                    <strong>{{ displayMetricValue(detailCampaign, column) }}</strong>
+                </div>
+            </div>
+        </aside>
+
+        <transition name="toast">
+            <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
+        </transition>
 
     </div>
     <div class="footer"> © Google, 2026.</div>

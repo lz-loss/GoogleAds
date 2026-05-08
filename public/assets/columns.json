@@ -1,6 +1,11 @@
 [
   {
     "width": 100,
+    "key": "date",
+    "label": "date"
+  },
+  {
+    "width": 100,
     "key": "campaign",
     "label": "Campaign"
   },
