@@ -82,32 +82,31 @@
                     <span class="lockup-brand">Ads</span>
                 </div>
                 <div class="account-selector">
-                    <span class="account-id">1124-3-mcc</span>
-                    <span class="account-phone">078-970-0966</span>
+                    <span class="account-id">1124-4-mcc</span>
+                    <span class="account-phone">172-135-6148</span>
                     <span class="material-symbols-outlined">arrow_drop_down</span>
                 </div>
                 <div class="search-box">
                     <span class="material-symbols-outlined search-icon">search</span>
-                    <input type="text" v-model="searchText" @input="saveSearchText"
-                        placeholder="Search for a page or campaign" class="search-input">
+                    <input type="text" placeholder="Search for a page or campaign" class="search-input">
                 </div>
             </div>
             <div class="header-right">
-                <button class="header-btn" @click="showToast('Appearance options opened')">
+                <button class="header-btn">
                     <span
                         class="material-symbols-outlined material-icon-i material-icons-extended _ngcontent-awn-AWSM-16"
                         role="img" aria-hidden="true">responsive_layout</span>
                     <span class="btn-text">Appearance</span>
                 </button>
-                <button class="header-btn" @click="refreshData">
+                <button class="header-btn">
                     <span class="material-symbols-outlined">refresh</span>
                     <span class="btn-text">Refresh</span>
                 </button>
-                <button class="header-btn" @click="showToast('Help center panel opened')">
+                <button class="header-btn">
                     <span class="material-symbols-outlined">help</span>
                     <span class="btn-text">Help</span>
                 </button>
-                <button class="header-btn notification-btn" @click="showToast('1 recommendation needs review')">
+                <button class="header-btn notification-btn">
                     <span class="material-symbols-outlined">notifications</span>
                     <span class="notification-badge">!</span>
                     <span class="btn-text">Notifications</span>
@@ -115,13 +114,14 @@
                 <div class="user-section">
                     <div class="user-info">
                         <div class="user-connect">
-                            <div class="user-phone">98-770-0086</div>
-                            <div class="user-email">1124-3-mcc</div>
+                            <div class="user-phone">172-135-6148</div>
+                            <div class="user-email">1124-4-mcc</div>
                         </div>
-                        <div class="user-name">seanuan@gmail.com</div>
+                        <div class="user-name">reillymalvina309@gmail.com
+</div>
                     </div>
                     <div class="user-avatar">
-                        D
+                        R
                     </div>
                 </div>
             </div>
@@ -163,18 +163,18 @@
                 <span class="filter-label">Filters</span>
                 <span class="filter-item">
                     <span>Campaign status:</span>
-                    <span class="filter-value">All</span>
+                    <span class="filter-value">Enabled, Paused</span>
                 </span>
                 <span class="filter-item">
                     <span>Ad group status:</span>
                     <span class="filter-value">Enabled, Paused</span>
                 </span>
-                <button class="add-filter-btn" @click="showFilterMenu = !showFilterMenu">
+                <button class="add-filter-btn">
                     <span>Add filter</span>
                 </button>
             </div>
             <div class="filter-right">
-                <button class="save-filter-btn" @click="showToast('Filters saved')">
+                <button class="save-filter-btn">
                     <span class="material-symbols-outlined">save</span>
                     <span style="font-size: 12px; font-weight: 500;">Save</span>
                 </button>
@@ -188,25 +188,25 @@
                 <div class="campaign-selector">
                     <button class="selector-btn">
                         <div>
-                            <span style="font-size: 18px; font-weight: 500;">{{ selectedCampaigns.length || 2 }}</span>
-                            <span style="font-size: 12px; font-weight: 500;">{{ selectedCampaigns.length ? 'Selected' : 'Unsaved' }}</span>
+                            <span style="font-size: 18px; font-weight: 500;">2</span>
+                            <span style="font-size: 12px; font-weight: 500;">Unsaved</span>
                         </div>
                         <span class="material-symbols-outlined">arrow_drop_down</span>
                     </button>
-                    <span class="material-symbols-outlined" style="color: #5f6368;" @click="showColumnsPanel = !showColumnsPanel">Edit</span>
+                    <span class="material-symbols-outlined" style="color: #5f6368;">Edit</span>
                 </div>
             </div>
             <div class="toolbar-right">
                 <div class="toolbar-right-icons">
-                    <button class="tool-btn tool-btn-2item" @click="downloadReport">
+                    <button class="tool-btn tool-btn-2item">
                         <span class="material-symbols-outlined">file_download</span>
                         <span>Download</span>
                     </button>
-                    <button class="tool-btn tool-btn-2item" @click="showToast('Report schedule draft opened')">
+                    <button class="tool-btn tool-btn-2item">
                         <span class="material-symbols-outlined">access_time</span>
                         <span>Schedule</span>
                     </button>
-                    <button class="tool-btn tool-btn-2item" @click="showToast('Feedback dialog opened')">
+                    <button class="tool-btn tool-btn-2item">
                         <span class="material-symbols-outlined">feedback</span>
                         <span>Feedback</span>
                     </button>
@@ -214,16 +214,16 @@
                 <div class="divider" style="height: 56px; margin: 0 10px;"></div>
                 <div class="toolbar-right-editbtn">
 
-                    <button class="tool-btn tool-item-black" @click="resetDemoState">
+                    <button class="tool-btn tool-item-black">
                         <span>Reset</span>
                     </button>
-                    <button class="tool-btn tool-item-blue" @click="showToast('Report saved')">
+                    <button class="tool-btn tool-item-blue">
                         <span>Save</span>
                     </button>
-                    <button class="tool-btn tool-item-blue" @click="showToast('Saved as a new report')">
+                    <button class="tool-btn tool-item-blue">
                         <span>Save as</span>
                     </button>
-                    <button class="tool-btn tool-item-blue" @click="showToast('Added to dashboard')">
+                    <button class="tool-btn tool-item-blue">
                         <span>Add to dashboard</span>
                     </button>
                 </div>
@@ -231,6 +231,10 @@
         </div>
 
         <!-- 第3行：日期选择栏 -->
+<div class="content-wrapper" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+        <div style="display: flex; flex: 1; min-height: 0;">
+
+        <div class="main-content" style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
         <div class="date-bar">
             <div class="date-controls">
                 <div class="date-range">
@@ -266,27 +270,15 @@
                     </div>
                 </div>
                 <div class="divider _ngcontent-awn-GINSU-22"></div>
-                <div @click="showFilterMenu = !showFilterMenu"
-                    style="color: #5f637b; margin-right: 24px; display: flex; align-items: center; flex-direction: column; gap: 2px; cursor: pointer;">
+                <div
+                    style="color: #5f637b; margin-right: 24px; display: flex; align-items: center; flex-direction: column; gap: 2px;">
                     <span class="material-symbols-outlined" style="font-size: 25px;">filter_alt</span>
                     <div style="font-size: 8px;">Filter</div>
                 </div>
-                <div>
-                    <span style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            width: 40px;
-                            height: 40px;
-                            line-height: 40px;
-                            text-align: center;
-                            border-top-left-radius: 20px;
-                            border-bottom-left-radius: 20px;
-                            background-color: #5f6368;
-                            color: #fff;
-                            ">
-                        <span class="material-symbols-outlined" style="transform: rotate(-90deg);">stat_2</span></span>
+                <div @click="toggleRightPanel" :class="['stat-toggle-btn', { active: showRightPanel }]">
+                    <span class="material-symbols-outlined">stat_2</span>
                 </div>
+
             </div>
 
             <!-- 日期选择下拉框 -->
@@ -447,47 +439,18 @@
                     </div>
                 </div>
         </div>
+
         </transition>
+
+  
 
         <!-- 筛选栏 -->
         <div class="filter-bar">
             <div>
-                <div class="thead">Filters</div>
-                <input type="text" v-model="filterText" @input="saveFilter" class="field"
-                    placeholder="Campaign name, status, or metric">
+                <div class="thead">Add filter</div>
+                <input type="text" v-model="filterText" @input="saveFilter" class="field" placeholder="">
             </div>
-            <div @click="clearFilter" style="cursor: pointer; padding-right: 25px; padding-top: 3px; color: #5f6368;">
-                <span class="material-symbols-outlined">delete</span>
-            </div>
-        </div>
-
-        <div class="inline-popovers">
-            <div v-if="showFilterMenu" class="popover-panel filter-popover">
-                <div class="popover-title">Add filter</div>
-                <button class="filter-choice" @click="setStatusFilter('all')">
-                    <span>Campaign status</span>
-                    <strong>All</strong>
-                </button>
-                <button class="filter-choice" @click="setStatusFilter('enabled')">
-                    <span>Campaign status</span>
-                    <strong>Enabled</strong>
-                </button>
-                <button class="filter-choice" @click="setStatusFilter('paused')">
-                    <span>Campaign status</span>
-                    <strong>Paused</strong>
-                </button>
-                <button class="filter-choice" @click="toggleHighIntentFilter">
-                    <span>Performance</span>
-                    <strong>{{ highIntentOnly ? 'Show all' : 'Clicks > 100' }}</strong>
-                </button>
-            </div>
-            <div v-if="showColumnsPanel" class="popover-panel columns-popover">
-                <div class="popover-title">Columns</div>
-                <label v-for="column in metricColumns" :key="column.key" class="column-choice">
-                    <input type="checkbox" v-model="column.visible">
-                    <span>{{ column.label }}</span>
-                </label>
-            </div>
+            
         </div>
 
         <!-- 表格区域 -->
@@ -495,10 +458,7 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th class="col-select">
-                            <input type="checkbox" :checked="pageSelectionState" @change="toggleSelectPage($event.target.checked)">
-                        </th>
-                        <th class="col-campaign" @click="sortBy('campaign')">
+                        <th class="col-campaign" style="width: 300px;" @click="sortBy('campaign')">
                             <div class="th-content" style="justify-content: flex-start;">
                                 <span class="span-title-child">Campaign</span>
                                 <span v-if="sortKey === 'campaign'"
@@ -510,77 +470,115 @@
                                 <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
-                        <th class="col-date" @click="sortBy('date')">
-                            <div class="th-content" style="justify-content: flex-start;">
-                                <span v-if="sortKey === 'date'" class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList.date === 'asc' ?
-                                    'arrow_upward' :
-                                    'arrow_downward'
-                                    }}</span>
-                                <span class="span-title-child">Date</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th class="col-status" @click="sortBy('status')">
-                            <div class="th-content" style="justify-content: flex-start;">
-                                <span class="span-title-child">Status</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
-                            </div>
-                        </th>
-                        <th v-for="column in visibleMetricColumns" :key="column.key" class="col-metric"
-                            @click="sortBy(column.key)">
+                        <th class="col-metric">
                             <div class="th-content">
-                                <span v-if="sortKey === column.key" class="material-symbols-outlined span-arrow-child">{{
-                                    sortOrderList[column.key] === 'asc' ?
+                                <span class="span-title-child">Cost</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('impressions')">
+                            <div class="th-content">
+                                <span v-if="sortKey === 'impressions'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.impressions === 'asc' ?
                                     'arrow_upward' :
                                     'arrow_downward'
                                     }}</span>
-                                <span class="span-title-child">{{ column.label }}</span>
+                                <span class="span-title-child">Impr.</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('clicks')">
+                            <div class="th-content">
+                                <span v-if="sortKey === 'clicks'" class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.clicks === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
+                                    }}</span>
+                                <span class="span-title-child">Clicks</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('installs')">
+                            <div class="th-content">
+                                <span v-if="sortKey === 'installs'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.installs === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
+                                    }}</span>
+                                <span class="span-title-child">Installs</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('inAppActions')">
+                            <div class="th-content">
+                                <span v-if="sortKey === 'inAppActions'"
+                                    class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.inAppActions === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
+                                    }}</span>
+                                <span class="span-title-child">In-app actions</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric">
+                            <div class="th-content">
+                                <span class="span-title-child">Cost / Install</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric">
+                            <div class="th-content">
+                                <span class="span-title-child">Cost / In-app action</span>
+                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
+                            </div>
+                        </th>
+                        <th class="col-metric" @click="sortBy('ctr')">
+                            <div class="th-content">
+                                <span v-if="sortKey === 'ctr'" class="material-symbols-outlined span-arrow-child">{{
+                                    sortOrderList.ctr === 'asc' ?
+                                    'arrow_upward' :
+                                    'arrow_downward'
+                                    }}</span>
+                                <span class="span-title-child">CTR</span>
                                 <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-if="paginatedCampaigns.length === 0">
-                        <td class="empty-state" :colspan="visibleMetricColumns.length + 4">
-                            <span class="material-symbols-outlined">filter_alt_off</span>
-                            <strong>No campaigns match the current filters</strong>
-                            <button class="action-btn apply" @click="resetDemoState">Reset filters</button>
-                        </td>
-                    </tr>
                     <tr v-for="campaign in paginatedCampaigns" :key="campaign.id"
                         :class="{ 'selected': campaign.selected }">
-                        <td class="col-select">
-                            <input type="checkbox" v-model="campaign.selected" @click.stop>
-                        </td>
-                        <td class="col-campaign" @click="openDetails(campaign)">{{ campaign.campaign }} </td>
-                        <td class="col-date">{{ campaign.displayDate }}</td>
-                        <td class="col-status">
-                            <button class="status-pill" :class="campaign.status" @click.stop="toggleCampaignStatus(campaign)">
-                                <span class="status-dot"></span>{{ campaign.statusLabel }}
-                            </button>
-                        </td>
-                        <td v-for="column in visibleMetricColumns" :key="column.key" class="col-metric">
-                            {{ displayMetricValue(campaign, column) }}
-                        </td>
+                        <td>{{ campaign.campaign }} </td>
+                        <td class="col-metric">{{ formatCurrency(campaign.cost) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.impressions) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.clicks) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.installs, 2) }}</td>
+                        <td class="col-metric">{{ formatNumber(campaign.inAppActions, 2) }}</td>
+                        <td class="col-metric">{{ formatCurrency(campaign.costPerInstall) }}</td>
+                        <td class="col-metric">{{ formatCurrency(campaign.costPerInAppActions) }}</td>
+                        <td class="col-metric">{{ formatPercent(campaign.ctr) }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="total-row">
-                        <td class="col-select"></td>
                         <td class="fw500">Total</td>
-                        <td class="fw500">—</td>
-                        <td class="fw500">{{ filteredCampaigns.length }} campaigns</td>
-                        <td v-for="column in visibleMetricColumns" :key="column.key" class="col-metric fw500">
-                            {{ displayMetricValue(totals, column) }}
-                        </td>
+                        <td class="col-metric fw500">—</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.impressions) }}</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.clicks) }}</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.installs, 2) }}</td>
+                        <td class="col-metric fw500">{{ formatNumber(totals.inAppActions, 2) }}</td>
+                        <td class="col-metric fw500">—</td>
+                        <td class="col-metric fw500">—</td>
+                        <td class="col-metric fw500">{{ formatPercent(totals.ctr) }}</td>
                     </tr>
                 </tfoot>
             </table>
 
             <!-- 分页控件 -->
-            <div class="pagination" v-if="filteredCampaigns.length > 0">
+            <div class="pagination" v-if="showPagination">
                 <div class="page-size" style="position: relative;">
                     <span>Show rows</span>
                     <div class="select-div" @click="togglePageSizeDropdown">
@@ -597,48 +595,73 @@
                     </div>
                 </div>
                 <div class="page-info">
-                    <span>{{ startRow }}-{{ endRow }} of {{ filteredCampaigns.length }}</span>
+                    <span>{{ startRow }} - {{ endRow }} of {{ filteredCampaigns.length }}</span>
                 </div>
                 <div class="page-nav">
-                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === 1 }" @click="goToPage(1)">first_page</span>
-                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === 1 }" @click="goToPage(currentPage - 1)">chevron_left</span>
-                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === totalPages }" @click="goToPage(currentPage + 1)">chevron_right</span>
-                    <span class="material-symbols-outlined" :class="{ disabled: currentPage === totalPages }" @click="goToPage(totalPages)">last_page</span>
+                    <span class="material-symbols-outlined" @click="currentPage = 1">first_page</span>
+                    <span class="material-symbols-outlined" @click="currentPage--">chevron_left</span>
+                    <span class="material-symbols-outlined" @click="currentPage++">chevron_right</span>
+                    <span class="material-symbols-outlined" @click="currentPage = totalPages">last_page</span>
                 </div>
             </div>
         </div>
 
-        <aside v-if="detailCampaign" class="detail-drawer">
-            <div class="drawer-header">
-                <div>
-                    <span>Campaign</span>
-                    <strong>{{ detailCampaign.campaign }}</strong>
-                </div>
-                <button class="icon-button" @click="detailCampaign = null">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            <div class="drawer-status">
-                <span class="drawer-date">{{ detailCampaign.displayDate }}</span>
-                <button class="status-pill" :class="detailCampaign.status" @click="toggleCampaignStatus(detailCampaign)">
-                    <span class="status-dot"></span>{{ detailCampaign.statusLabel }}
-                </button>
-                <button class="tool-btn tool-item-blue" @click="showToast('Campaign draft opened')">Edit</button>
-            </div>
-            <div class="drawer-metrics">
-                <div v-for="column in metricColumns" :key="column.key" class="drawer-metric">
-                    <span>{{ column.label }}</span>
-                    <strong>{{ displayMetricValue(detailCampaign, column) }}</strong>
-                </div>
-            </div>
-        </aside>
-
-        <transition name="toast">
-            <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
-        </transition>
 
     </div>
-    <div class="footer"> © Google, 2026.</div>
+    <div v-if="showRightPanel" class="right-sidebar">
+         <div class="sidebar-header">
+        <div class="header-left">
+            <span class="material-symbols-outlined" style="color:#757575">add_chart</span>
+            <span class="view-right-title">Generate report</span>
+            <span class="beta-badge">BETA</span>
+        </div>
+        <span class="material-symbols-outlined" style="padding-right: 20px;font-size: 28px;">
+keyboard_arrow_up
+</span>
+    </div>
+
+        <!-- 文本输入区域 -->
+        <div class="input-field">
+           
+            <textarea class="report-textarea" placeholder="Describe the report you want to generate"></textarea>
+        </div>
+
+        <!-- 按钮组 -->
+        <div class="action-buttons">
+            <span class="view-right-sugg">Hide suggestions</span>
+            <button class="btn-primary">Generate</button>
+        </div>
+
+        <!-- 建议区域 -->
+        <div class="suggestions-section">
+            <span class="view-sugg">Suggestions</span>
+            <div class="chips">
+
+                <button class="chip">Add goal-aligned metrics</button>
+                <button class="chip">Where is my performance dropping?</button>
+                <button class="chip">What are my top campaigns?</button>
+            </div>
+            <span class="view-right-sugg">Refresh suggestions</span>
+                
+                
+                   
+                    
+               
+           
+        </div>
+
+        <!-- 免责声明 -->
+        <div class="disclaimer">
+            <p class="dis-txt">
+                Review the automatically selected rows and columns to ensure the generated report represents what you asked for.
+                Do not share personal, confidential, or sensitive information.
+                Learn more about Google's <a href="#" target="_blank">Terms of Service</a>.
+            </p>
+        </div>
+</div>
+    </div>
+<div class="footer"> © Google, 2026.</div>
+</div>
 
     <!-- Vue.js CDN -->
     <script src="./js/vue.global.js"></script>
