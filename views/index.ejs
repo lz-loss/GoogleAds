@@ -96,7 +96,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <button class="header-btn">
+                <button class="header-btn" data-tooltip="Appearance">
                     <span
                         class="material-symbols-outlined material-icon-i material-icons-extended _ngcontent-awn-AWSM-16"
                         role="img" aria-hidden="true">responsive_layout</span>
@@ -109,11 +109,12 @@
                     :disabled="isRefreshing"
                     :aria-busy="isRefreshing.toString()"
                     @click="refreshPage"
+                    data-tooltip="Refresh"
                 >
                     <span class="material-symbols-outlined refresh-icon">refresh</span>
                     <span class="btn-text">{{ isRefreshing ? 'Refreshing' : 'Refresh' }}</span>
                 </button>
-                <button class="header-btn">
+                <button class="header-btn" data-tooltip="Open the quick help panel">
                     <span class="material-symbols-outlined">help</span>
                     <span class="btn-text">Help</span>
                 </button>
