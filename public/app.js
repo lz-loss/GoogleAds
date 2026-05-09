@@ -2,6 +2,24 @@ const { createApp } = Vue;
 
 createApp({
     data() {
+        const defaultColumnWidths = {
+            campaign: 300,
+            cost: 120,
+            impressions: 120,
+            clicks: 120,
+            installs: 120,
+            inAppActions: 140,
+            costPerInstall: 140,
+            costPerInAppActions: 180,
+            ctr: 120,
+        };
+        let savedColumnWidths = {};
+        try {
+            savedColumnWidths = JSON.parse(localStorage.getItem('tableColumnWidths')) || {};
+        } catch (error) {
+            savedColumnWidths = {};
+        }
+
         return {
             showRightPanel: false,
             showNotification: true,
@@ -24,6 +42,45 @@ createApp({
                 costPerInAppActions: 'desc',
                 ctr: 'desc',
             },
+            columnOrder: [
+                'campaign',
+                'cost',
+                'impressions',
+                'clicks',
+                'installs',
+                'inAppActions',
+                'costPerInstall',
+                'costPerInAppActions',
+                'ctr'
+            ],
+            columnCssVarNames: {
+                campaign: 'campaign',
+                cost: 'cost',
+                impressions: 'impressions',
+                clicks: 'clicks',
+                installs: 'installs',
+                inAppActions: 'in-app-actions',
+                costPerInstall: 'cost-per-install',
+                costPerInAppActions: 'cost-per-in-app-actions',
+                ctr: 'ctr'
+            },
+            columnWidths: {
+                ...defaultColumnWidths,
+                ...savedColumnWidths
+            },
+            columnMinWidths: {
+                campaign: 180,
+                cost: 88,
+                impressions: 88,
+                clicks: 88,
+                installs: 96,
+                inAppActions: 128,
+                costPerInstall: 128,
+                costPerInAppActions: 160,
+                ctr: 88
+            },
+            columnResizeState: null,
+            resizingColumn: '',
             selectAll: false,
             filterText: localStorage.getItem('filterText') || '',
             accountText: localStorage.getItem('accountText') || '2 accounts',
@@ -43,8 +100,11 @@ createApp({
             ],
             showDatePicker: false,
             selectedDateOption: 'yesterday',
+            appliedDateOption: 'yesterday',
             startDate: null,
             endDate: null,
+            draftStartDate: null,
+            draftEndDate: null,
             calendarMonth: new Date(),
             selectingStartDate: true,
             dateSelectRef: null
@@ -94,6 +154,14 @@ createApp({
         formattedEndDate() {
             if (!this.endDate) return '';
             return this.formatDate(this.endDate);
+        },
+        formattedDraftStartDate() {
+            if (!this.draftStartDate) return '';
+            return this.formatDate(this.draftStartDate);
+        },
+        formattedDraftEndDate() {
+            if (!this.draftEndDate) return '';
+            return this.formatDate(this.draftEndDate);
         },
         dropdownStyle() {
             if (!this.showDatePicker || !this.$refs.dateSelectRef) {
@@ -172,6 +240,20 @@ createApp({
                 result.ctr = '0.00';
             }
             return result;
+        },
+        totalColumnWidth() {
+            return this.columnOrder.reduce((total, columnKey) => {
+                return total + this.getColumnWidth(columnKey);
+            }, 0);
+        },
+        tableColumnStyle() {
+            const style = {
+                '--table-total-width': `${this.totalColumnWidth}px`
+            };
+            this.columnOrder.forEach(columnKey => {
+                style[`--table-col-${this.columnCssVarNames[columnKey]}`] = `${this.getColumnWidth(columnKey)}px`;
+            });
+            return style;
         }
     },
     methods: {
@@ -251,16 +333,22 @@ createApp({
                 d1.getDate() === d2.getDate();
         },
         isInRange(date) {
-            if (!this.startDate || !this.endDate) return false;
+            if (!this.draftStartDate || !this.draftEndDate) return false;
             const d = new Date(date);
-            return d >= new Date(this.startDate) && d <= new Date(this.endDate);
+            return d >= new Date(this.draftStartDate) && d <= new Date(this.draftEndDate);
         },
         toggleDatePicker(event) {
             event.stopPropagation();
-            this.showDatePicker = !this.showDatePicker;
             if (this.showDatePicker) {
-                if (this.startDate) {
-                    this.calendarMonth = new Date(this.startDate);
+                this.cancelDateRange();
+                return;
+            }
+
+            this.showDatePicker = true;
+            if (this.showDatePicker) {
+                this.resetDraftDateRange();
+                if (this.draftStartDate) {
+                    this.calendarMonth = new Date(this.draftStartDate);
                 } else {
                     this.calendarMonth = new Date();
                 }
@@ -271,7 +359,7 @@ createApp({
         },
         scrollToSelectedDate() {
             const scrollContainer = document.querySelector('.calendar-months-scroll');
-            if (!scrollContainer || !this.startDate) return;
+            if (!scrollContainer || !this.draftStartDate) return;
             const selectedDayElement = document.querySelector('.calendar-day.selected');
             if (selectedDayElement) {
                 selectedDayElement.scrollIntoView({
@@ -296,119 +384,118 @@ createApp({
             today.setHours(0, 0, 0, 0);
             switch (option) {
                 case 'today':
-                    this.startDate = new Date(today);
-                    this.endDate = new Date(today);
+                    this.draftStartDate = new Date(today);
+                    this.draftEndDate = new Date(today);
                     break;
                 case 'yesterday':
                     const yesterday = new Date(today);
                     yesterday.setDate(yesterday.getDate() - 1);
-                    this.startDate = new Date(yesterday);
-                    this.endDate = new Date(yesterday);
+                    this.draftStartDate = new Date(yesterday);
+                    this.draftEndDate = new Date(yesterday);
                     break;
                 case 'thisWeekSunSat':
                     const thisWeekStartSun = new Date(today);
                     const dayOfWeekSun = thisWeekStartSun.getDay();
                     const diffToSun = dayOfWeekSun;
                     thisWeekStartSun.setDate(thisWeekStartSun.getDate() - diffToSun);
-                    this.startDate = new Date(thisWeekStartSun);
-                    this.endDate = new Date(today);
+                    this.draftStartDate = new Date(thisWeekStartSun);
+                    this.draftEndDate = new Date(today);
                     break;
                 case 'thisWeekMonSun':
                     const thisWeekStartMon = new Date(today);
                     const dowMon = thisWeekStartMon.getDay();
                     const diffToMon = dowMon === 0 ? 6 : dowMon - 1;
                     thisWeekStartMon.setDate(thisWeekStartMon.getDate() - diffToMon);
-                    this.startDate = new Date(thisWeekStartMon);
-                    this.endDate = new Date(today);
+                    this.draftStartDate = new Date(thisWeekStartMon);
+                    this.draftEndDate = new Date(today);
                     break;
                 case 'last7Days':
                     const last7Days = new Date(today);
                     last7Days.setDate(last7Days.getDate() - 7);
-                    this.startDate = last7Days;
+                    this.draftStartDate = last7Days;
                     const yesterdayFor7 = new Date(today);
                     yesterdayFor7.setDate(yesterdayFor7.getDate() - 1);
-                    this.endDate = yesterdayFor7;
+                    this.draftEndDate = yesterdayFor7;
                     break;
                 case 'lastWeekSunSat':
                     const lastWeekSunSat = new Date(today);
                     const dayOfWeek = lastWeekSunSat.getDay();
                     const diffToLastSun = dayOfWeek === 0 ? 7 : dayOfWeek;
                     lastWeekSunSat.setDate(lastWeekSunSat.getDate() - diffToLastSun);
-                    this.startDate = new Date(lastWeekSunSat);
+                    this.draftStartDate = new Date(lastWeekSunSat);
                     const lastSat = new Date(lastWeekSunSat);
                     lastSat.setDate(lastSat.getDate() + 6);
-                    this.endDate = lastSat;
+                    this.draftEndDate = lastSat;
                     break;
                 case 'lastWeekMonSun':
                     const lastWeekMonSun = new Date(today);
                     const dow = lastWeekMonSun.getDay();
                     const diffToLastMon1 = dow === 1 ? 7 : (dow === 0 ? 6 : dow - 1);
                     lastWeekMonSun.setDate(lastWeekMonSun.getDate() - diffToLastMon1);
-                    this.startDate = new Date(lastWeekMonSun);
+                    this.draftStartDate = new Date(lastWeekMonSun);
                     const lastSun = new Date(lastWeekMonSun);
                     lastSun.setDate(lastSun.getDate() + 6);
-                    this.endDate = lastSun;
+                    this.draftEndDate = lastSun;
                     break;
                 case 'lastBusinessWeek':
                     const lastBusinessWeekStart = new Date(today);
                     const d = lastBusinessWeekStart.getDay();
                     const diffToLastMon2 = d === 1 ? 7 : (d === 0 ? 6 : d - 1);
                     lastBusinessWeekStart.setDate(lastBusinessWeekStart.getDate() - diffToLastMon2);
-                    this.startDate = new Date(lastBusinessWeekStart);
+                    this.draftStartDate = new Date(lastBusinessWeekStart);
                     const lastFri = new Date(lastBusinessWeekStart);
                     lastFri.setDate(lastFri.getDate() + 4);
-                    this.endDate = lastFri;
+                    this.draftEndDate = lastFri;
                     break;
                 case 'last14Days':
                     const last14Days = new Date(today);
                     last14Days.setDate(last14Days.getDate() - 14);
-                    this.startDate = last14Days;
+                    this.draftStartDate = last14Days;
                     const yesterdayFor14 = new Date(today);
                     yesterdayFor14.setDate(yesterdayFor14.getDate() - 1);
-                    this.endDate = yesterdayFor14;
+                    this.draftEndDate = yesterdayFor14;
                     break;
                 case 'thisMonth':
                     const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-                    this.startDate = thisMonthStart;
+                    this.draftStartDate = thisMonthStart;
                     const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                    this.endDate = thisMonthEnd;
+                    this.draftEndDate = thisMonthEnd;
                     break;
                 case 'last30Days':
                     const last30Days = new Date(today);
                     last30Days.setDate(last30Days.getDate() - 29);
-                    this.startDate = last30Days;
-                    this.endDate = new Date(today);
+                    this.draftStartDate = last30Days;
+                    this.draftEndDate = new Date(today);
                     break;
                 case 'lastMonth':
                     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                    this.startDate = lastMonth;
+                    this.draftStartDate = lastMonth;
                     const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
-                    this.endDate = lastMonthEnd;
+                    this.draftEndDate = lastMonthEnd;
                     break;
                 case 'allTime':
-                    this.startDate = new Date(2000, 0, 1);
-                    this.endDate = new Date();
+                    this.draftStartDate = new Date(2000, 0, 1);
+                    this.draftEndDate = new Date();
                     break;
             }
-            if (this.startDate) {
-                this.calendarMonth = new Date(this.startDate);
+            if (this.draftStartDate) {
+                this.calendarMonth = new Date(this.draftStartDate);
             }
             this.$nextTick(() => {
                 this.scrollToSelectedDate();
             });
-            this.applyDateRange();
         },
         selectCalendarDate(date) {
             if (this.selectingStartDate) {
-                this.startDate = new Date(date);
-                this.endDate = null;
+                this.draftStartDate = new Date(date);
+                this.draftEndDate = null;
                 this.selectingStartDate = false;
             } else {
-                if (date < this.startDate) {
-                    this.endDate = new Date(this.startDate);
-                    this.startDate = new Date(date);
+                if (date < this.draftStartDate) {
+                    this.draftEndDate = new Date(this.draftStartDate);
+                    this.draftStartDate = new Date(date);
                 } else {
-                    this.endDate = new Date(date);
+                    this.draftEndDate = new Date(date);
                 }
                 this.selectingStartDate = true;
             }
@@ -432,11 +519,85 @@ createApp({
         navigateMonth(direction) {
             this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + direction, 1);
         },
+        cloneDate(date) {
+            const parsed = this.parseLocalDate(date);
+            return parsed ? new Date(parsed) : null;
+        },
+        resetDraftDateRange() {
+            this.selectedDateOption = this.appliedDateOption;
+            this.draftStartDate = this.cloneDate(this.startDate);
+            this.draftEndDate = this.cloneDate(this.endDate);
+            this.selectingStartDate = true;
+        },
         applyDateRange() {
+            if (!this.draftStartDate || !this.draftEndDate) return;
+            this.startDate = this.cloneDate(this.draftStartDate);
+            this.endDate = this.cloneDate(this.draftEndDate);
+            this.appliedDateOption = this.selectedDateOption;
+            this.currentPage = 1;
             this.showDatePicker = false;
         },
         cancelDateRange() {
+            this.resetDraftDateRange();
             this.showDatePicker = false;
+        },
+        getColumnWidth(columnKey) {
+            const width = Number(this.columnWidths[columnKey]);
+            const minWidth = this.columnMinWidths[columnKey] || 88;
+            if (Number.isFinite(width) && width > 0) return Math.max(minWidth, width);
+            return minWidth;
+        },
+        getPointerClientX(event) {
+            const touch = event.touches && event.touches[0]
+                ? event.touches[0]
+                : event.changedTouches && event.changedTouches[0];
+            if (touch) return touch.clientX;
+            return Number.isFinite(event.clientX) ? event.clientX : null;
+        },
+        startColumnResize(event, columnKey) {
+            const clientX = this.getPointerClientX(event);
+            if (clientX === null) return;
+            this.columnResizeState = {
+                columnKey,
+                startX: clientX,
+                startWidth: this.getColumnWidth(columnKey)
+            };
+            this.resizingColumn = columnKey;
+            document.body.classList.add('is-column-resizing');
+            document.addEventListener('mousemove', this.handleColumnResize);
+            document.addEventListener('mouseup', this.stopColumnResize);
+            document.addEventListener('touchmove', this.handleColumnResize, { passive: false });
+            document.addEventListener('touchend', this.stopColumnResize);
+            document.addEventListener('touchcancel', this.stopColumnResize);
+        },
+        handleColumnResize(event) {
+            if (!this.columnResizeState) return;
+            if (event.cancelable) event.preventDefault();
+            const clientX = this.getPointerClientX(event);
+            if (clientX === null) return;
+            const { columnKey, startX, startWidth } = this.columnResizeState;
+            const minWidth = this.columnMinWidths[columnKey] || 88;
+            const nextWidth = Math.max(minWidth, Math.round(startWidth + clientX - startX));
+            this.columnWidths = {
+                ...this.columnWidths,
+                [columnKey]: nextWidth
+            };
+        },
+        stopColumnResize() {
+            if (this.columnResizeState) {
+                try {
+                    localStorage.setItem('tableColumnWidths', JSON.stringify(this.columnWidths));
+                } catch (error) {
+                }
+            }
+            this.columnResizeState = null;
+            this.resizingColumn = '';
+            document.body.classList.remove('is-column-resizing');
+            document.removeEventListener('mousemove', this.handleColumnResize);
+            document.removeEventListener('mouseup', this.stopColumnResize);
+            document.removeEventListener('touchmove', this.handleColumnResize);
+            document.removeEventListener('touchend', this.stopColumnResize);
+            document.removeEventListener('touchcancel', this.stopColumnResize);
         },
         formatCurrency(value) {
             if (value === 0 || value === undefined) return '-';
@@ -551,9 +712,11 @@ createApp({
     async mounted() {
         await this.loadTableData();
         this.selectDateOption('yesterday');
+        this.applyDateRange();
         document.addEventListener('click', this.handleClickOutside);
     },
     beforeUnmount() {
+        this.stopColumnResize();
         document.removeEventListener('click', this.handleClickOutside);
     },
     watch: {

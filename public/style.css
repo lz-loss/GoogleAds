@@ -1045,10 +1045,22 @@ input:checked+.toggle-slider:before {
 
 /* ========== 表格区域 ========== */
 .table-wrapper {
+    --table-line-color: #dadce0;
+    --table-line-width: 1px;
+    --table-total-width: 1360px;
+    --table-col-campaign: 300px;
+    --table-col-cost: 120px;
+    --table-col-impressions: 120px;
+    --table-col-clicks: 120px;
+    --table-col-installs: 120px;
+    --table-col-in-app-actions: 140px;
+    --table-col-cost-per-install: 140px;
+    --table-col-cost-per-in-app-actions: 180px;
+    --table-col-ctr: 120px;
     background-color: #fff;
     padding: 0;
     margin: 8px;
-    border: 1px solid #dadce0;
+    border: var(--table-line-width) solid var(--table-line-color);
     border-radius: 7px;
     display: flex;
     flex-direction: column;
@@ -1059,12 +1071,15 @@ input:checked+.toggle-slider:before {
 
 /* 表格容器 - 直接让表格可滚动 */
 .table-wrapper {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .data-table {
-    width: 100%;
-    border-collapse: collapse;
+    width: var(--table-total-width);
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 13px;
     table-layout: fixed;
     /* 固定列宽 */
@@ -1116,37 +1131,64 @@ input:checked+.toggle-slider:before {
     text-align: left;
     font-weight: 500;
     color: #5f6368;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: var(--table-line-width) solid var(--table-line-color);
     white-space: nowrap;
     vertical-align: middle;
     user-select: none;
     background-color: #fff;
+    position: relative;
     /* 确保表头有背景色 */
+}
+
+.data-table th:not(:last-child),
+.data-table td:not(:last-child) {
+    border-right: var(--table-line-width) solid var(--table-line-color);
 }
 
 /* 设置每列的宽度 */
 .data-table th:nth-child(1),
 .data-table td:nth-child(1) {
-    width: 300px;
+    width: var(--table-col-campaign);
 }
 
 .data-table th:nth-child(2),
-.data-table td:nth-child(2),
+.data-table td:nth-child(2) {
+    width: var(--table-col-cost);
+}
+
 .data-table th:nth-child(3),
-.data-table td:nth-child(3),
+.data-table td:nth-child(3) {
+    width: var(--table-col-impressions);
+}
+
 .data-table th:nth-child(4),
-.data-table td:nth-child(4),
+.data-table td:nth-child(4) {
+    width: var(--table-col-clicks);
+}
+
 .data-table th:nth-child(5),
-.data-table td:nth-child(5),
+.data-table td:nth-child(5) {
+    width: var(--table-col-installs);
+}
+
 .data-table th:nth-child(6),
-.data-table td:nth-child(6),
+.data-table td:nth-child(6) {
+    width: var(--table-col-in-app-actions);
+}
+
 .data-table th:nth-child(7),
-.data-table td:nth-child(7),
+.data-table td:nth-child(7) {
+    width: var(--table-col-cost-per-install);
+}
+
 .data-table th:nth-child(8),
-.data-table td:nth-child(8),
+.data-table td:nth-child(8) {
+    width: var(--table-col-cost-per-in-app-actions);
+}
+
 .data-table th:nth-child(9),
 .data-table td:nth-child(9) {
-    width: 120px;
+    width: var(--table-col-ctr);
 }
 
 .data-table th.col-campaign {
@@ -1164,7 +1206,7 @@ input:checked+.toggle-slider:before {
 
 .data-table td {
     padding: 5px 16px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: var(--table-line-width) solid var(--table-line-color);
     vertical-align: middle;
     line-height: 18px;
     height: 38px;
@@ -1263,6 +1305,41 @@ input:checked+.toggle-slider:before {
     margin-right: 0;
 }
 
+.column-resize-handle {
+    position: absolute;
+    top: 0;
+    right: -4px;
+    bottom: 0;
+    width: 8px;
+    cursor: col-resize;
+    z-index: 3;
+    touch-action: none;
+}
+
+.column-resize-handle::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3px;
+    width: 2px;
+    background-color: transparent;
+}
+
+.column-resize-handle:hover::after,
+.column-resize-handle.resizing::after {
+    background-color: #1a73e8;
+}
+
+body.is-column-resizing {
+    cursor: col-resize;
+    user-select: none;
+}
+
+body.is-column-resizing * {
+    cursor: col-resize !important;
+}
+
 .th-content {
     display: flex;
     align-items: center;
@@ -1282,12 +1359,6 @@ input:checked+.toggle-slider:before {
     color: #474b4e;
     font-size: 13px;
     font-weight: bold;
-}
-
-.th-content>.span-last-child {
-    margin-right: 0px;
-    color: #474b4e;
-    ;
 }
 
 .sort-icon {
