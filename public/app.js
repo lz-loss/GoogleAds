@@ -218,12 +218,17 @@ createApp({
         },
         totals() {
             const result = this.filteredCampaigns.reduce((acc, campaign) => {
-                acc.cost += campaign.cost;
-                acc.impressions += campaign.impressions;
-                acc.clicks += campaign.clicks;
-                acc.installs += campaign.installs;
-                acc.inAppActions += campaign.inAppActions;
-                acc.ctr += 0;
+                const impressions = Number(campaign.impressions) || 0;
+                const ctr = Number(campaign.ctr);
+                acc.cost += Number(campaign.cost) || 0;
+                acc.impressions += impressions;
+                acc.clicks += Number(campaign.clicks) || 0;
+                acc.installs += Number(campaign.installs) || 0;
+                acc.inAppActions += Number(campaign.inAppActions) || 0;
+                if (Number.isFinite(ctr) && impressions > 0) {
+                    acc.ctrWeightedSum += ctr * impressions;
+                    acc.ctrImpressions += impressions;
+                }
                 return acc;
             }, {
                 cost: 0,
@@ -232,10 +237,14 @@ createApp({
                 installs: 0,
                 inAppActions: 0,
                 costPerAction: 0,
+                ctrWeightedSum: 0,
+                ctrImpressions: 0,
                 ctr: 0,
             });
-            if (this.filteredCampaigns.length > 0 && Number(result.impressions) > 0) {
-                result.ctr = (Number(result.clicks) / Number(result.impressions)).toFixed(2);
+            if (result.ctrImpressions > 0) {
+                result.ctr = (result.ctrWeightedSum / result.ctrImpressions).toFixed(2);
+            } else if (this.filteredCampaigns.length > 0 && Number(result.impressions) > 0) {
+                result.ctr = ((Number(result.clicks) / Number(result.impressions)) * 100).toFixed(2);
             } else {
                 result.ctr = '0.00';
             }
