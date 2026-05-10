@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const INPUT_FILE = path.join(__dirname, 'data.xlsx');
+const GOOGLE_ADS_INPUT_FILE = path.join(__dirname, 'campaign-adgrops-adsets.xlsx');
 const OUTPUT_DIR = path.join(__dirname, 'public', 'assets');
 
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -173,6 +174,241 @@ async function processExcelFile(filePath) {
     }
 }
 
+function cleanText(value, fallback = '') {
+    if (value === null || value === undefined) {
+        return fallback;
+    }
+
+    const text = String(value).trim();
+    if (!text) {
+        return fallback;
+    }
+
+    return text;
+}
+
+function readNumber(value) {
+    const text = cleanText(value);
+    if (!text || text === '--' || text === '—' || text === '。。。') {
+        return 0;
+    }
+
+    const normalized = text
+        .replace(/,/g, '')
+        .replace(/\$/g, '')
+        .replace(/%/g, '')
+        .replace(/\/day/g, '')
+        .replace(/[^\d.-]/g, '');
+
+    const number = Number.parseFloat(normalized);
+    return Number.isFinite(number) ? number : 0;
+}
+
+function normalizeAccount(value, index) {
+    const accounts = [
+        '921-239-0750',
+        '382-941-0056',
+        '617-520-8394',
+        '105-772-4613',
+        '849-316-5582',
+        '294-087-1129',
+        '503-648-9271',
+        '771-403-2285',
+        '426-159-6740',
+        '938-251-7064'
+    ];
+    const text = cleanText(value);
+
+    if (!text || text === '--' || text.includes('上面') || text.includes('。。。')) {
+        return accounts[index % accounts.length];
+    }
+
+    return text;
+}
+
+function normalizeCampaignStatus(value) {
+    const text = cleanText(value, 'Enabled');
+    if (text === 'Paused' || text === 'Removed' || text.startsWith('Total:')) {
+        return text;
+    }
+    return 'Enabled';
+}
+
+function normalizeStatus(value, campaignStatus) {
+    const text = cleanText(value);
+    if (text && text !== '。。。') {
+        return text;
+    }
+    return campaignStatus === 'Enabled' ? 'Eligible' : campaignStatus;
+}
+
+function objectRowsFromSheet(workbook, sheetName) {
+    const worksheet = workbook.Sheets[sheetName];
+    if (!worksheet) {
+        return [];
+    }
+
+    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: '' });
+    if (rows.length < 4) {
+        return [];
+    }
+
+    const headers = rows[3];
+    return rows.slice(4)
+        .filter(row => row && row.some(cell => cleanText(cell)))
+        .map((row, rowIndex) => {
+            const record = {};
+            headers.forEach((header, columnIndex) => {
+                if (header) {
+                    record[header] = row[columnIndex];
+                }
+            });
+            record.__rowIndex = rowIndex;
+            return record;
+        });
+}
+
+function normalizeCampaignRow(row, index) {
+    const campaignStatus = normalizeCampaignStatus(row['Campaign status']);
+    const campaignName = cleanText(row.Campaign, `Campaign ${index + 1}`);
+    const status = normalizeStatus(row.Status, campaignStatus);
+    const installs = readNumber(row.Installs);
+    const inAppActions = readNumber(row['In-app actions']);
+    const conversions = readNumber(row.Conversions) || installs + inAppActions;
+    const cost = readNumber(row.Cost);
+
+    return {
+        id: `campaign-${index + 1}`,
+        campaignStatus,
+        campaign: campaignName,
+        budget: cleanText(row.Budget, '$10.00/day'),
+        status,
+        optimizationScore: cleanText(row['Optimization score'], '--'),
+        account: normalizeAccount(row.Account, index),
+        campaignType: cleanText(row['Campaign type'], 'App'),
+        costPerInstall: readNumber(row['Cost / Install']),
+        costPerInAppAction: readNumber(row['Cost / In-app action']),
+        viewThroughConv: readNumber(row['View-through conv.']),
+        installs,
+        inAppActions,
+        participatedInAppActions: readNumber(row['Participated in-app actions']) || inAppActions,
+        cost,
+        costPerParticipatedInAppAction: readNumber(row['Cost / Participated in-app action']),
+        convRate: readNumber(row['Conv. rate']),
+        conversions,
+        costPerConv: readNumber(row['Cost / conv.']),
+        isTotal: campaignStatus.startsWith('Total:'),
+        isRemoved: campaignStatus === 'Removed'
+    };
+}
+
+function normalizeAdGroupTemplate(row) {
+    return {
+        id: 'adgroup-1',
+        adGroupStatus: cleanText(row['Ad group status'], 'Enabled'),
+        adGroup: cleanText(row['Ad group'], 'Ad group 1'),
+        status: cleanText(row.Status, 'Not eligible'),
+        targetCpa: cleanText(row['Target CPA'], '$20.00'),
+        conversions: readNumber(row.Conversions),
+        costPerConv: readNumber(row['Cost / conv.']),
+        costPerInstall: readNumber(row['Cost / Install']),
+        costPerInAppAction: readNumber(row['Cost / In-app action']),
+        viewThroughConv: readNumber(row['View-through conv.']),
+        brandInclusions: cleanText(row['Brand Inclusions'], '[]'),
+        locationsOfInterest: cleanText(row['Locations of interest'], '[]'),
+        installs: readNumber(row.Installs),
+        inAppActions: readNumber(row['In-app actions']),
+        participatedInAppActions: readNumber(row['Participated in-app actions']),
+        cost: readNumber(row.Cost),
+        costPerParticipatedInAppAction: readNumber(row['Cost / Participated in-app action']),
+        convRate: readNumber(row['Conv. rate'])
+    };
+}
+
+function buildAssetRows() {
+    const imageShares = [0.14, 0.12, 0.1, 0.09, 0.08, 0.07, 0.06, 0.055, 0.045, 0.04];
+    const textAssets = [
+        { id: 'headline-1', asset: 'Play chess with an AI', assetType: 'Headline', share: 0.09 },
+        { id: 'headline-2', asset: 'The best chess game', assetType: 'Headline', share: 0.075 },
+        { id: 'headline-3', asset: 'Challenge the AI and become a king of chess', assetType: 'Headline', share: 0.065 },
+        { id: 'description-1', asset: 'Improve your chess skills', assetType: 'Description', share: 0.06 },
+        { id: 'description-2', asset: 'Become a chess legend', assetType: 'Description', share: 0.05 },
+        { id: 'description-3', asset: 'Play chess with computer', assetType: 'Description', share: 0.045 }
+    ];
+
+    const imageAssets = imageShares.map((share, index) => {
+        const imageNumber = String(index + 1).padStart(2, '0');
+        return {
+            id: `image-${imageNumber}`,
+            asset: `1080 x 1080`,
+            assetType: 'Image',
+            image: `/assets/ad-assets/asset-${imageNumber}.jpg`,
+            source: `Free stock image - 2026-05-09 17:50:13.930 (${index + 1})`,
+            dimensions: '1080 x 1080',
+            orientation: 'Square',
+            aspectRatio: '1:1',
+            assetId: String(3590627600 + index),
+            share
+        };
+    });
+
+    return [...imageAssets, ...textAssets].map(asset => ({
+        ...asset,
+        status: 'Eligible',
+        performance: 'Pending',
+        clicks: 0,
+        ctr: 0,
+        impressions: 0,
+        cost: 0,
+        installs: 0,
+        costPerInstall: 0,
+        inAppActions: 0,
+        costPerInAppAction: 0
+    }));
+}
+
+async function processGoogleAdsWorkbook(filePath = GOOGLE_ADS_INPUT_FILE) {
+    if (!fs.existsSync(filePath)) {
+        console.error(`Google Ads input file not found: ${filePath}`);
+        return;
+    }
+
+    try {
+        const workbook = XLSX.readFile(filePath, { cellDates: true });
+        const campaignRows = objectRowsFromSheet(workbook, 'campaign');
+        const adGroupRows = objectRowsFromSheet(workbook, 'ad group');
+        const campaigns = campaignRows.map(normalizeCampaignRow);
+        const adGroupTemplateRow = adGroupRows.find(row => {
+            const status = cleanText(row['Ad group status']);
+            return status && !status.startsWith('Total:');
+        }) || {};
+
+        const data = {
+            generatedAt: new Date().toISOString(),
+            dateRange: {
+                start: '2026-04-11',
+                end: '2026-05-08',
+                label: 'Apr 11 - May 8, 2026'
+            },
+            campaigns,
+            adGroupTemplate: normalizeAdGroupTemplate(adGroupTemplateRow),
+            assets: buildAssetRows(),
+            assetSummary: {
+                headlines: '3/5',
+                descriptions: '3/5',
+                images: '10/20',
+                videos: '0/20'
+            }
+        };
+
+        const googleAdsDataPath = path.join(OUTPUT_DIR, 'googleAdsData.json');
+        fs.writeFileSync(googleAdsDataPath, JSON.stringify(data, null, 2), 'utf8');
+        console.log(`Successfully created ${googleAdsDataPath}`);
+    } catch (error) {
+        console.error(`Error processing file ${filePath}:`, error.message);
+    }
+}
+
 async function main() {
     console.log('Starting Excel to JSON conversion...');
     console.log(`Input file: ${INPUT_FILE}`);
@@ -187,8 +423,19 @@ async function main() {
     console.log('Conversion completed!');
 }
 
+async function googleAdsMain() {
+    console.log('Starting Google Ads workbook conversion...');
+    console.log(`Input file: ${GOOGLE_ADS_INPUT_FILE}`);
+    console.log(`Output directory: ${OUTPUT_DIR}`);
+
+    await processGoogleAdsWorkbook(GOOGLE_ADS_INPUT_FILE);
+    console.log('Google Ads conversion completed!');
+}
+
 // 导出函数，以便在其他文件中调用
 module.exports = {
     processExcelFile,
+    processGoogleAdsWorkbook,
+    googleAdsMain,
     main
 };

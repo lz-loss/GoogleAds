@@ -8,6 +8,7 @@ const fs = require('fs');
 
 const app = new Koa();
 const router = new Router();
+const transform = require('./transform');
 
 // 配置模板引擎
 app.use(views(path.join(__dirname, 'views'), {
@@ -21,17 +22,32 @@ app.use(serve(path.join(__dirname, 'public')));
 router.get('/', async (ctx) => {
 
   // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
-  const transform = require('./transform');
   await transform.main();
 
   await ctx.render('index', {});
 });
 router.get('/aw/reporteditor/view', async (ctx) => {
   // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
-  const transform = require('./transform');
   await transform.main();
 
   await ctx.render('index', {});
+});
+
+async function renderGoogleAdsPage(ctx, page) {
+  await transform.googleAdsMain();
+  await ctx.render('google_ads', { page });
+}
+
+router.get('/aw/campaigns', async (ctx) => {
+  await renderGoogleAdsPage(ctx, 'campaigns');
+});
+
+router.get('/aw/adgroups', async (ctx) => {
+  await renderGoogleAdsPage(ctx, 'adgroups');
+});
+
+router.get('/aw/adassets', async (ctx) => {
+  await renderGoogleAdsPage(ctx, 'adassets');
 });
 
 router.get('/adsmanager/reporting/manage', async (ctx) => {
