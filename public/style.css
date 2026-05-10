@@ -1203,10 +1203,10 @@ input:checked+.toggle-slider:before {
     /* 确保表头有背景色 */
 }
 
-.data-table th:not(:last-child),
+/* .data-table th:not(:last-child),
 .data-table td:not(:last-child) {
     border-right: var(--table-line-width) solid var(--table-line-color);
-}
+} */
 
 /* 设置每列的宽度 */
 .data-table th:nth-child(1),
@@ -1265,6 +1265,10 @@ input:checked+.toggle-slider:before {
     /* 居中对齐 */
     cursor: pointer;
     color: #585f64;
+}
+
+.data-table th>td:hover {
+    border-right: 1px solid blue;
 }
 
 .data-table td {
@@ -1385,14 +1389,25 @@ input:checked+.toggle-slider:before {
     top: 0;
     bottom: 0;
     left: 3px;
-    width: 2px;
+    width: 1px;
     background-color: transparent;
 }
+/* 当鼠标悬停在 tr 上时，改变其内部手柄伪元素的背景颜色 */
+.data-table tr:hover .column-resize-handle::after {
+    background-color: #4285f4;
+    /* 配合之前的平滑过渡效果 */
+    transition: background-color 0.2s ease;
+}
 
-.column-resize-handle:hover::after,
+/* 初始状态（非 Hover 时） */
+.data-table .column-resize-handle::after {
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+/* .column-resize-handle:hover::after,
 .column-resize-handle.resizing::after {
     background-color: #1a73e8;
-}
+} */
 
 body.is-column-resizing {
     cursor: col-resize;
