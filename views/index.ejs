@@ -268,7 +268,7 @@
                 </div>
                 <div class="divider _ngcontent-awn-GINSU-22"></div>
                 <div class="date-select" ref="dateSelectRef">
-                    <div>{{ getDateOptionLabel(selectedDateOption) }}</div>
+                    <div>{{ getDateOptionLabel(appliedDateOption) }}</div>
                     <div @click="toggleDatePicker" style="cursor: pointer;">
                         <div>
                             <span>{{ formattedStartDate }}{{ formattedStartDate && formattedEndDate &&
@@ -380,13 +380,13 @@
                                     <div class="date-input-wrapper" :class="{ active: selectingStartDate }"
                                         @click="selectStartDate">
                                         <div class="date-input-label">Start date*</div>
-                                        <div class="date-input-value">{{ formattedStartDate }}</div>
+                                        <div class="date-input-value">{{ formattedDraftStartDate }}</div>
                                     </div>
                                     <div style="line-height: 49px;">—</div>
                                     <div class="date-input-wrapper" :class="{ active: !selectingStartDate }"
                                         @click="selectEndDate">
                                         <div class="date-input-label">End date*</div>
-                                        <div class="date-input-value">{{ formattedEndDate }}</div>
+                                        <div class="date-input-value">{{ formattedDraftEndDate }}</div>
                                     </div>
                                 </div>
                                 <!-- 月份导航栏 -->
@@ -428,11 +428,11 @@
                                                     <div v-for="day in week" :key="day.date" class="calendar-day"
                                                         :class="{
                                         'other-month': !day.isCurrentMonth,
-                                        'selected': isSameDay(day.date, startDate),
+                                        'selected': isSameDay(day.date, draftStartDate),
                                         'in-range': isInRange(day.date),
-                                        'start-date': isSameDay(day.date, startDate) && !isSameDay(startDate, endDate),
-                                        'end-date': isSameDay(day.date, endDate) && !isSameDay(startDate, endDate),
-                                        'single-date': isSameDay(day.date, startDate) && isSameDay(startDate, endDate)
+                                        'start-date': isSameDay(day.date, draftStartDate) && !isSameDay(draftStartDate, draftEndDate),
+                                        'end-date': isSameDay(day.date, draftEndDate) && !isSameDay(draftStartDate, draftEndDate),
+                                        'single-date': isSameDay(day.date, draftStartDate) && isSameDay(draftStartDate, draftEndDate)
                                     }" @click="selectCalendarDate(day.date)">
                                                         <span class="day-number">{{ day.date.getDate() }}</span>
                                                     </div>
@@ -444,7 +444,7 @@
                             </div>
                         </div>
                         <!-- 操作按钮 -->
-                        <div class="date-picker-actions" v-if="startDate && endDate">
+                        <div class="date-picker-actions" v-if="draftStartDate && draftEndDate">
                             <button class="action-btn cancel" @click="cancelDateRange">Cancel</button>
                             <button class="action-btn apply" @click="applyDateRange">Apply</button>
                         </div>
@@ -467,10 +467,10 @@
 
         <!-- 表格区域 -->
         <div class="table-wrapper">
-            <table class="data-table" :class="{ 'is-reloading': isRefreshing }">
+            <table class="data-table" :class="{ 'is-reloading': isRefreshing }" :style="tableColumnStyle">
                 <thead>
                     <tr>
-                        <th class="col-campaign" style="width: 300px;" @click="sortBy('campaign')">
+                        <th class="col-campaign" @click="sortBy('campaign')">
                             <div class="th-content" style="justify-content: flex-start;">
                                 <span class="span-title-child">Campaign</span>
                                 <span v-if="sortKey === 'campaign'"
@@ -479,14 +479,18 @@
                                     'arrow_upward' :
                                     'arrow_downward'
                                     }}</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'campaign' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'campaign')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'campaign')" @click.stop></span>
                         </th>
                         <th class="col-metric">
                             <div class="th-content">
                                 <span class="span-title-child">Cost</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'cost' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'cost')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'cost')" @click.stop></span>
                         </th>
                         <th class="col-metric" @click="sortBy('impressions')">
                             <div class="th-content">
@@ -497,8 +501,10 @@
                                     'arrow_downward'
                                     }}</span>
                                 <span class="span-title-child">Impr.</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'impressions' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'impressions')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'impressions')" @click.stop></span>
                         </th>
                         <th class="col-metric" @click="sortBy('clicks')">
                             <div class="th-content">
@@ -508,8 +514,10 @@
                                     'arrow_downward'
                                     }}</span>
                                 <span class="span-title-child">Clicks</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'clicks' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'clicks')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'clicks')" @click.stop></span>
                         </th>
                         <th class="col-metric" @click="sortBy('installs')">
                             <div class="th-content">
@@ -520,8 +528,10 @@
                                     'arrow_downward'
                                     }}</span>
                                 <span class="span-title-child">Installs</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'installs' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'installs')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'installs')" @click.stop></span>
                         </th>
                         <th class="col-metric" @click="sortBy('inAppActions')">
                             <div class="th-content">
@@ -532,20 +542,28 @@
                                     'arrow_downward'
                                     }}</span>
                                 <span class="span-title-child">In-app actions</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'inAppActions' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'inAppActions')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'inAppActions')" @click.stop></span>
                         </th>
                         <th class="col-metric">
                             <div class="th-content">
                                 <span class="span-title-child">Cost / Install</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle" :class="{ resizing: resizingColumn === 'costPerInstall' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'costPerInstall')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'costPerInstall')" @click.stop></span>
                         </th>
                         <th class="col-metric">
                             <div class="th-content">
                                 <span class="span-title-child">Cost / In-app action</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
+                            <span class="column-resize-handle"
+                                :class="{ resizing: resizingColumn === 'costPerInAppActions' }"
+                                @mousedown.stop.prevent="startColumnResize($event, 'costPerInAppActions')"
+                                @touchstart.stop.prevent="startColumnResize($event, 'costPerInAppActions')"
+                                @click.stop></span>
                         </th>
                         <th class="col-metric" @click="sortBy('ctr')">
                             <div class="th-content">
@@ -555,7 +573,6 @@
                                     'arrow_downward'
                                     }}</span>
                                 <span class="span-title-child">CTR</span>
-                                <span class="material-symbols-outlined span-last-child">arrow_drop_down</span>
                             </div>
                         </th>
                     </tr>
