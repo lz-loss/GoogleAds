@@ -104,7 +104,7 @@ body {
     padding: 0px 8px;
     background-color: #f1f3f4;
     border-bottom: 0px;
-    height: 72px;
+    height: 80px;
 }
 
 .header-left {
@@ -171,7 +171,7 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 18px 8px;
     cursor: pointer;
     border-radius: 4px;
     white-space: nowrap;
@@ -263,7 +263,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    padding: 2px 12px;
+    padding: 10px 12px;
     background: none;
     border: none;
     position: relative;
