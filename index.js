@@ -18,20 +18,26 @@ app.use(views(path.join(__dirname, 'views'), {
 // 静态资源服务
 app.use(serve(path.join(__dirname, 'public')));
 
+async function renderHomePage(ctx) {
+  // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
+  await transform.main();
+
+  await ctx.render('index', {});
+}
+
+app.use(async (ctx, next) => {
+  if ((ctx.method === 'GET' || ctx.method === 'HEAD') && (ctx.path === '/aw/reporteditor' || ctx.path.startsWith('/aw/reporteditor/'))) {
+    await renderHomePage(ctx);
+    return;
+  }
+
+  await next();
+});
+
 // 路由配置
-router.get('/', async (ctx) => {
+router.get('/', renderHomePage);
 
-  // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
-  await transform.main();
-
-  await ctx.render('index', {});
-});
-router.get('/aw/reporteditor/view', async (ctx) => {
-  // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
-  await transform.main();
-
-  await ctx.render('index', {});
-});
+router.get('/aw/reporteditor/view', renderHomePage);
 
 async function renderGoogleAdsPage(ctx, page) {
   await transform.googleAdsMain();
