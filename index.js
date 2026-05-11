@@ -8,6 +8,7 @@ const fs = require('fs');
 
 const app = new Koa();
 const router = new Router();
+const transform = require('./transform');
 
 // 配置模板引擎
 app.use(views(path.join(__dirname, 'views'), {
@@ -17,21 +18,42 @@ app.use(views(path.join(__dirname, 'views'), {
 // 静态资源服务
 app.use(serve(path.join(__dirname, 'public')));
 
-// 路由配置
-router.get('/', async (ctx) => {
-
+async function renderHomePage(ctx) {
   // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
-  const transform = require('./transform');
   await transform.main();
 
   await ctx.render('index', {});
+}
+
+app.use(async (ctx, next) => {
+  if ((ctx.method === 'GET' || ctx.method === 'HEAD') && (ctx.path === '/aw/reporteditor' || ctx.path.startsWith('/aw/reporteditor/'))) {
+    await renderHomePage(ctx);
+    return;
+  }
+
+  await next();
 });
-router.get('/aw/reporteditor/view', async (ctx) => {
-  // 调用 transform.js 中的函数，将 Excel 文件转换为 JSON 文件
-  const transform = require('./transform');
-  await transform.main();
 
-  await ctx.render('index', {});
+// 路由配置
+router.get('/', renderHomePage);
+
+router.get('/aw/reporteditor/view', renderHomePage);
+
+async function renderGoogleAdsPage(ctx, page) {
+  await transform.googleAdsMain();
+  await ctx.render('google_ads', { page });
+}
+
+router.get('/aw/campaigns', async (ctx) => {
+  await renderGoogleAdsPage(ctx, 'campaigns');
+});
+
+router.get('/aw/adgroups', async (ctx) => {
+  await renderGoogleAdsPage(ctx, 'adgroups');
+});
+
+router.get('/aw/adassets', async (ctx) => {
+  await renderGoogleAdsPage(ctx, 'adassets');
 });
 
 router.get('/adsmanager/reporting/manage', async (ctx) => {
