@@ -25,6 +25,12 @@ createApp({
             selectedCampaignId: params.get('campaignId') || '',
             selectedAdGroupId: params.get('adGroupId') || 'adgroup-1',
             previewModal: null,
+            account: {
+                id: '1124-4-mcc',
+                phone: '172-135-6148',
+                email: 'nwq0822@gmail.com',
+                name: 'reillymalvina309@gmail.com'
+            },
             data: {
                 dateRange: {
                     start: '2026-04-11',
