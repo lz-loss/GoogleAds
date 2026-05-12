@@ -398,6 +398,13 @@
     padding: 18px 28px 10px;
     border-bottom: 1px solid #dadce0;
     background: #eef0f1;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ga-context-bar.hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
 }
 
 .ga-selectors {
@@ -528,6 +535,11 @@
     gap: 20px;
     padding: 22px 28px 0;
     border-bottom: 1px solid #dadce0;
+    position: sticky;
+    top: 0;
+    background: #eef0f1;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(60, 64, 67, 0.1);
 }
 
 .ga-page-head h1 {
@@ -809,13 +821,14 @@
     margin: 0 28px 18px;
     background: #fff;
     box-shadow: 0 2px 4px rgba(60, 64, 67, 0.24);
+    padding-top: 8px;
 }
 
 .ga-floating-add {
-    position: absolute;
+    position: sticky;
     z-index: 20;
     left: 8px;
-    top: -32px;
+    top: 8px;
     width: 56px;
     height: 56px;
     border-radius: 50%;
@@ -824,6 +837,7 @@
     box-shadow: 0 3px 8px rgba(60, 64, 67, 0.28);
     display: grid;
     place-items: center;
+    margin-bottom: 8px;
 }
 
 .ga-floating-add .material-symbols-outlined {
@@ -831,10 +845,15 @@
 }
 
 .ga-table-toolbar {
+    position: sticky;
+    top: 72px;
     height: 72px;
     border-bottom: 1px solid #dadce0;
     justify-content: space-between;
     padding: 0 22px 0 86px;
+    background: #fff;
+    z-index: 15;
+    box-shadow: 0 2px 4px rgba(60, 64, 67, 0.1);
 }
 
 .ga-toolbar-left {

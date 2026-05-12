@@ -148,7 +148,7 @@
             </nav>
 
             <main class="ga-main">
-                <section class="ga-context-bar">
+                <section class="ga-context-bar" :class="{ hidden: isContextBarHidden }">
                     <div class="ga-selectors">
                         <div class="ga-selector active" @click.stop="toggleDropdown('view')">
                             <small>View (2 filters)</small>
