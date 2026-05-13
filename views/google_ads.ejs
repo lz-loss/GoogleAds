@@ -48,7 +48,7 @@
                 </label>
             </div>
             <div class="ga-topbar-actions">
-                <button class="ga-tool-button" type="button">
+                <button class="ga-tool-button ga-tool-button--search" type="button">
                     <span class="material-symbols-outlined">search</span>
                     <span>Search</span>
                 </button>
@@ -150,7 +150,7 @@
             <main class="ga-main">
                 <section class="ga-context-bar" :class="{ hidden: isContextBarHidden }">
                     <div class="ga-selectors">
-                        <div class="ga-selector active" @click.stop="toggleDropdown('view')">
+                        <div class="ga-selector active" v-if="!isContextBarHidden" @click.stop="toggleDropdown('view')">
                             <small>View (2 filters)</small>
                             <strong><span class="material-symbols-outlined">home</span> All campaigns</strong>
                             <span class="material-symbols-outlined">arrow_drop_down</span>
@@ -194,11 +194,17 @@
                 </section>
 
                 <section class="ga-page-head">
-                    <div>
+                    <div class="ga-page-head-heading">
                         <h1>{{ pageTitle }}</h1>
-                        <div v-if="pageMode !== 'adgroups'" class="ga-tabs">
-                            <button class="active" type="button">{{ pageMode === 'adassets' ? 'Assets' : 'Campaigns' }}</button>
-                            <button type="button">{{ pageMode === 'adassets' ? 'Combinations' : 'Settings' }}</button>
+                        <div v-if="isContextBarHidden" class="ga-page-head-selector-wrapper">
+                            <div class="ga-selector active" @click.stop="toggleDropdown('view')">
+                                <small>View (2 filters)</small>
+                                <strong><span class="material-symbols-outlined">home</span> All campaigns</strong>
+                                <span class="material-symbols-outlined">arrow_drop_down</span>
+                                <div v-if="dropdown === 'view'" class="ga-dropdown">
+                                    <a href="/aw/campaigns">All campaigns</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="ga-date-row">
@@ -212,6 +218,11 @@
                         <a href="#">Show last 30 days</a>
                     </div>
                 </section>
+
+                <div v-if="pageMode !== 'adgroups'" class="ga-tabs">
+                    <button class="active" type="button">{{ pageMode === 'adassets' ? 'Assets' : 'Campaigns' }}</button>
+                    <button type="button">{{ pageMode === 'adassets' ? 'Combinations' : 'Settings' }}</button>
+                </div>
 
                 <div v-if="pageMode !== 'adassets'" class="ga-info-banner">
                     <span class="material-symbols-outlined">info</span>
