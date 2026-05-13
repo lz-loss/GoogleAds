@@ -115,36 +115,40 @@
                 </a>
             </aside>
 
-            <nav class="ga-sidebar" aria-label="Campaign navigation">
-                <a class="ga-sidebar-link" href="#">Overview</a>
-                <a class="ga-sidebar-link" href="#">Recommendations</a>
-                <div class="ga-sidebar-group">
-                    <button class="ga-sidebar-group-title" type="button">
-                        <span>Insights and reports</span>
-                        <span class="material-symbols-outlined">expand_more</span>
+            <nav class="ga-sidebar" aria-label="Campaign navigation" @mouseover="handleTooltipMouseOver" @mouseleave="hideTooltip" @mousemove="handleMouseMove">
+                <a class="ga-sidebar-link" data-tooltip="Overview" href="#">Overview</a>
+                <a class="ga-sidebar-link" data-tooltip="Recommendations" href="#">Recommendations</a>
+                <div class="ga-sidebar-group" :class="{ open: ads_isInsightsReportsOpen }">
+                    <button class="ga-sidebar-group-title" type="button" @click="ads_isInsightsReportsOpen = !ads_isInsightsReportsOpen">
+                        <span data-tooltip="Insights and reports">Insights and reports</span>
+                        <span class="material-symbols-outlined">{{ ads_isInsightsReportsOpen ? 'expand_less' : 'expand_more' }}</span>
                     </button>
-                    <a class="ga-sidebar-link" href="/aw/reporteditor/view">Report editor</a>
-                    <a class="ga-sidebar-link" href="#">Dashboards</a>
+                    <div class="ga-sidebar-submenu">
+                        <a class="ga-sidebar-link" href="/aw/reporteditor/view" data-tooltip="Report editor">Report editor</a>
+                        <a class="ga-sidebar-link" href="#" data-tooltip="Dashboards" data-tooltip="Dashboards">Dashboards</a>
+                    </div>
                 </div>
-                <div class="ga-sidebar-group open">
-                    <button class="ga-sidebar-group-title" type="button">
+                <div class="ga-sidebar-group" :class="{ open: ads_isCampaignOpen }">
+                    <button class="ga-sidebar-group-title" type="button" @click="ads_isCampaignOpen = !ads_isCampaignOpen" data-tooltip="Campaigns">
                         <span>Campaigns</span>
-                        <span class="material-symbols-outlined">expand_less</span>
+                        <span class="material-symbols-outlined">{{ ads_isCampaignOpen ? 'expand_less' : 'expand_more' }}</span>
                     </button>
-                    <a class="ga-sidebar-link" :class="{ active: pageMode === 'campaigns' }" href="/aw/campaigns">Campaigns</a>
-                    <a class="ga-sidebar-link" :class="{ active: pageMode === 'adgroups' }" :href="adGroupsHref">Ad groups</a>
-                    <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref">Ad assets</a>
-                    <a class="ga-sidebar-link" href="#">Experiments</a>
+                    <div class="ga-sidebar-submenu">
+                        <a class="ga-sidebar-link" :class="{ active: pageMode === 'campaigns' }" href="/aw/campaigns" data-tooltip="Campaigns">Campaigns</a>
+                        <a class="ga-sidebar-link" :class="{ active: pageMode === 'adgroups' }" :href="adGroupsHref" data-tooltip="Ad groups">Ad groups</a>
+                        <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref" data-tooltip="Ad assets">Ad assets</a>
+                        <a class="ga-sidebar-link" href="#" data-tooltip="Experiments">Experiments</a>
+                    </div>
                 </div>
                 <div class="ga-sidebar-group open">
                     <button class="ga-sidebar-group-title" type="button">
-                        <span>Assets</span>
+                        <span data-tooltip="Assets">Assets</span>
                         <span class="material-symbols-outlined">expand_less</span>
                     </button>
-                    <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref">Assets</a>
+                    <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref" data-tooltip="Assets">Assets</a>
                 </div>
-                <a class="ga-sidebar-link" href="#">Audiences, keywords, and content</a>
-                <a class="ga-sidebar-link" href="#">Change history</a>
+                <a class="ga-sidebar-link" href="#" data-tooltip="Audiences, keywords, and content">Audiences, keywords, and content</a>
+                <a class="ga-sidebar-link" href="#" data-tooltip="Change history">Change history</a>
             </nav>
 
             <main class="ga-main">
@@ -511,8 +515,17 @@
                 </aside>
             </section>
         </div>
+        <div
+            v-if="tooltip.visible"
+            class="ga-tooltip"
+            :style="{
+                left: tooltip.x + 'px',
+                top: tooltip.y + 'px'
+            }"
+        >
+            {{ tooltip.text }}
+        </div>
     </div>
-
     <script>
         window.GOOGLE_ADS_PAGE = <%- JSON.stringify(page) %>;
     </script>

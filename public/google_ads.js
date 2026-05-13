@@ -26,6 +26,19 @@ createApp({
             selectedAdGroupId: params.get('adGroupId') || 'adgroup-1',
             previewModal: null,
             isContextBarHidden: false,
+            ads_isCampaignOpen: false,
+            ads_isInsightsReportsOpen: true,
+            tooltip: {
+                visible: false,
+                text: '',
+                x: 0,
+                y: 0
+            },
+            ads_currentTooltipTarget: null,
+            ads_tooltipTimer: null,
+            mouseX: 0,
+            mouseY: 0,
+
             account: {
                 id: '1124-4-mcc',
                 phone: '172-135-6148',
@@ -285,6 +298,57 @@ createApp({
             if (mainElement) {
                 this.isContextBarHidden = mainElement.scrollTop > 50;
             }
+        },
+        
+        handleMouseMove(event) {
+            // 实时记录鼠标位置
+            this.mouseX = event.clientX
+            this.mouseY = event.clientY
+        },
+
+        handleTooltipMouseOver(event) {
+
+            // 找最近的带 tooltip 的元素
+            const target = event.target.closest('[data-tooltip]')
+
+            if (!target) {
+
+                this.hideTooltip()
+
+                return
+            }
+
+            // 避免同元素内部移动重复触发
+            if (this.currentTooltipTarget === target) {
+                return
+            }
+
+            this.currentTooltipTarget = target
+
+// 清除旧定时器
+        clearTimeout(this.tooltipTimer)
+
+        // 延迟 0.25 秒
+        this.tooltipTimer = setTimeout(() => {
+
+            this.tooltip.text = target.dataset.tooltip
+
+            // 鼠标位置
+            this.tooltip.x = this.mouseX + 0
+
+            // 贴近鼠标下方
+            this.tooltip.y = this.mouseY + 21
+
+            this.tooltip.visible = true
+
+        }, 1000)
+        },
+
+        hideTooltip() {
+            // 清除旧定时器
+            clearTimeout(this.tooltipTimer)
+            this.tooltip.visible = false
+            this.currentTooltipTarget = null
         }
     },
     async mounted() {
