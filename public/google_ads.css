@@ -134,6 +134,9 @@
 .ga-tool-button {
     height: 56px;
     min-width: 66px;
+    margin-left: 4px;
+    margin-right: 4px;
+    letter-spacing: 0.14px;
     flex-direction: column;
     justify-content: center;
     gap: 2px;
@@ -273,13 +276,14 @@
     width: 76px;
     flex: 0 0 76px;
     background: #edf0f1;
-    padding: 12px 8px;
+    padding: 22px 18px;
     overflow: hidden;
 }
 
 .ga-create-button {
     width: 56px;
     height: 56px;
+    margin-right: 3px;
     border-radius: 50%;
     background: #fff;
     box-shadow: 0 2px 8px rgba(60, 64, 67, 0.24);
@@ -303,8 +307,10 @@
     gap: 2px;
     text-decoration: none;
     color: #5f6368;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .ga-rail-item.active {
@@ -314,8 +320,8 @@
 .ga-rail-item.active .material-symbols-outlined {
     background: #1a73e8;
     color: #fff;
-    border-radius: 18px;
-    padding: 5px 12px;
+    border-radius: 16px;
+    padding: 1.5px 12px;
 }
 
 .ga-sidebar {
@@ -834,6 +840,14 @@
     gap: 20px;
     color: #5f6368;
     font-size: 18px;
+}
+
+.ga-top-arrow-drop-down {
+    font-size: 24;
+    position: relative;
+    top: 1.5px;
+    right: 6px;
+    /* align-items: center; */
 }
 
 .ga-toolbar-left .material-symbols-outlined {
