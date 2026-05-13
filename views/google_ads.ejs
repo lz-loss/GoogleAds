@@ -118,28 +118,28 @@
             <nav class="ga-sidebar" aria-label="Campaign navigation">
                 <a class="ga-sidebar-link" href="#">Overview</a>
                 <a class="ga-sidebar-link" href="#">Recommendations</a>
-                <div class="ga-sidebar-group">
-                    <button class="ga-sidebar-group-title" type="button">
+                <div class="ga-sidebar-group" :class="{ open: isSidebarGroupOpen('insights') }">
+                    <button class="ga-sidebar-group-title" type="button" :aria-expanded="isSidebarGroupOpen('insights')" @click="toggleSidebarGroup('insights')">
                         <span>Insights and reports</span>
-                        <span class="material-symbols-outlined">expand_more</span>
+                        <span class="material-symbols-outlined">{{ isSidebarGroupOpen('insights') ? 'expand_less' : 'expand_more' }}</span>
                     </button>
                     <a class="ga-sidebar-link" href="/aw/reporteditor/view">Report editor</a>
                     <a class="ga-sidebar-link" href="#">Dashboards</a>
                 </div>
-                <div class="ga-sidebar-group open">
-                    <button class="ga-sidebar-group-title" type="button">
+                <div class="ga-sidebar-group" :class="{ open: isSidebarGroupOpen('campaigns') }">
+                    <button class="ga-sidebar-group-title" type="button" :aria-expanded="isSidebarGroupOpen('campaigns')" @click="toggleSidebarGroup('campaigns')">
                         <span>Campaigns</span>
-                        <span class="material-symbols-outlined">expand_less</span>
+                        <span class="material-symbols-outlined">{{ isSidebarGroupOpen('campaigns') ? 'expand_less' : 'expand_more' }}</span>
                     </button>
                     <a class="ga-sidebar-link" :class="{ active: pageMode === 'campaigns' }" href="/aw/campaigns">Campaigns</a>
                     <a class="ga-sidebar-link" :class="{ active: pageMode === 'adgroups' }" :href="adGroupsHref">Ad groups</a>
                     <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref">Ad assets</a>
                     <a class="ga-sidebar-link" href="#">Experiments</a>
                 </div>
-                <div class="ga-sidebar-group open">
-                    <button class="ga-sidebar-group-title" type="button">
+                <div class="ga-sidebar-group" :class="{ open: isSidebarGroupOpen('assets') }">
+                    <button class="ga-sidebar-group-title" type="button" :aria-expanded="isSidebarGroupOpen('assets')" @click="toggleSidebarGroup('assets')">
                         <span>Assets</span>
-                        <span class="material-symbols-outlined">expand_less</span>
+                        <span class="material-symbols-outlined">{{ isSidebarGroupOpen('assets') ? 'expand_less' : 'expand_more' }}</span>
                     </button>
                     <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref">Assets</a>
                 </div>

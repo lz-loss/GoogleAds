@@ -389,6 +389,10 @@
     min-height: 38px;
 }
 
+.ga-sidebar-group:not(.open) .ga-sidebar-link {
+    display: none;
+}
+
 .ga-main {
     flex: 1;
     min-width: 0;

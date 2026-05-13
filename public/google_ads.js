@@ -37,6 +37,11 @@ createApp({
             selectedAdGroupId: params.get('adGroupId') || 'adgroup-1',
             previewModal: null,
             isContextBarHidden: false,
+            sidebarGroups: {
+                insights: false,
+                campaigns: true,
+                assets: true
+            },
             statusMenuOptions: [
                 { state: 'Enabled', label: 'Enable' },
                 { state: 'Paused', label: 'Pause' },
@@ -255,6 +260,15 @@ createApp({
         toggleNavigation() {
             this.isNavCollapsed = !this.isNavCollapsed;
             localStorage.setItem('googleAdsNavCollapsed', String(this.isNavCollapsed));
+        },
+        isSidebarGroupOpen(groupName) {
+            return Boolean(this.sidebarGroups[groupName]);
+        },
+        toggleSidebarGroup(groupName) {
+            this.sidebarGroups = {
+                ...this.sidebarGroups,
+                [groupName]: !this.sidebarGroups[groupName]
+            };
         },
         closeDropdown() {
             this.dropdown = '';
