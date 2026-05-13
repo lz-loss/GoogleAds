@@ -332,7 +332,25 @@
                                 </tr>
                                 <tr v-for="campaign in campaignRows" :key="campaign.id">
                                     <td><span class="ga-checkbox"></span></td>
-                                    <td><span :class="['ga-status-dot', statusDotClass(campaign.campaignStatus)]"></span></td>
+                                    <td class="state-col">
+                                        <div class="ga-status-cell" :class="{ open: dropdown === statusDropdownName(campaign.id) }" @click.stop>
+                                            <button class="ga-status-trigger" type="button"
+                                                :aria-label="`Change campaign status for ${campaign.campaign}`"
+                                                :aria-expanded="dropdown === statusDropdownName(campaign.id)"
+                                                @click.stop="toggleStatusMenu(campaign.id)">
+                                                <span :class="['ga-status-marker', statusDotClass(campaign.campaignStatus)]" aria-hidden="true"></span>
+                                                <span class="material-symbols-outlined ga-status-arrow" aria-hidden="true">arrow_drop_down</span>
+                                            </button>
+                                            <div v-if="dropdown === statusDropdownName(campaign.id)" class="ga-status-menu" role="menu">
+                                                <button v-for="option in statusMenuOptions" :key="option.state" type="button" role="menuitem"
+                                                    :class="{ active: campaign.campaignStatus === option.state }"
+                                                    @click.stop="setCampaignStatus(campaign, option.state)">
+                                                    <span :class="['ga-status-marker', statusDotClass(option.state)]" aria-hidden="true"></span>
+                                                    <span>{{ option.label }}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td class="name-col">
                                         <span class="material-symbols-outlined ga-campaign-type">download_for_offline</span>
                                         <a :href="campaignHref(campaign.id)">{{ campaign.campaign }}</a>

@@ -1,6 +1,16 @@
 const { createApp } = Vue;
 
 const params = new URLSearchParams(window.location.search);
+const CAMPAIGN_STATUS_STORAGE_KEY = 'googleAdsCampaignStatuses';
+
+function readCampaignStatusOverrides() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(CAMPAIGN_STATUS_STORAGE_KEY) || '{}');
+        return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
+    } catch (error) {
+        return {};
+    }
+}
 
 function getInitialPageMode() {
     if (window.GOOGLE_ADS_PAGE) {
@@ -21,11 +31,17 @@ createApp({
         return {
             pageMode: getInitialPageMode(),
             dropdown: '',
+            campaignStatusOverrides: readCampaignStatusOverrides(),
             isNavCollapsed: localStorage.getItem('googleAdsNavCollapsed') === 'true',
             selectedCampaignId: params.get('campaignId') || '',
             selectedAdGroupId: params.get('adGroupId') || 'adgroup-1',
             previewModal: null,
             isContextBarHidden: false,
+            statusMenuOptions: [
+                { state: 'Enabled', label: 'Enable' },
+                { state: 'Paused', label: 'Pause' },
+                { state: 'Removed', label: 'Remove' }
+            ],
             account: {
                 id: '1124-4-mcc',
                 phone: '172-135-6148',
@@ -221,6 +237,7 @@ createApp({
             try {
                 const response = await fetch('/assets/googleAdsData.json', { cache: 'no-store' });
                 this.data = await response.json();
+                this.applyCampaignStatusOverrides();
                 if (!this.selectedCampaignId && this.pageMode !== 'campaigns' && this.campaignRows.length) {
                     this.selectedCampaignId = this.campaignRows[0].id;
                 }
@@ -240,6 +257,39 @@ createApp({
             localStorage.setItem('googleAdsNavCollapsed', String(this.isNavCollapsed));
         },
         closeDropdown() {
+            this.dropdown = '';
+        },
+        statusDropdownName(campaignId) {
+            return `campaign-status-${campaignId}`;
+        },
+        toggleStatusMenu(campaignId) {
+            const dropdownName = this.statusDropdownName(campaignId);
+            this.dropdown = this.dropdown === dropdownName ? '' : dropdownName;
+        },
+        campaignStatusText(status) {
+            return status === 'Enabled' ? 'Eligible' : status;
+        },
+        applyCampaignStatus(campaign, status) {
+            campaign.campaignStatus = status;
+            campaign.status = this.campaignStatusText(status);
+            campaign.isRemoved = status === 'Removed';
+        },
+        applyCampaignStatusOverrides() {
+            if (!Array.isArray(this.data.campaigns)) return;
+            this.data.campaigns.forEach(campaign => {
+                const status = this.campaignStatusOverrides[campaign.id];
+                if (status) {
+                    this.applyCampaignStatus(campaign, status);
+                }
+            });
+        },
+        setCampaignStatus(campaign, status) {
+            this.applyCampaignStatus(campaign, status);
+            this.campaignStatusOverrides = {
+                ...this.campaignStatusOverrides,
+                [campaign.id]: status
+            };
+            localStorage.setItem(CAMPAIGN_STATUS_STORAGE_KEY, JSON.stringify(this.campaignStatusOverrides));
             this.dropdown = '';
         },
         campaignHref(id) {
