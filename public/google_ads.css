@@ -141,6 +141,10 @@
     position: relative;
 }
 
+.ga-tool-button--search {
+    display: none;
+}
+
 .ga-tool-button span:last-child {
     font-size: 12px;
     font-weight: 600;
@@ -528,30 +532,42 @@
 }
 
 .ga-page-head {
-    min-height: 116px;
+    min-height: 88px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    padding: 22px 28px 0;
-    border-bottom: 1px solid #dadce0;
+    gap: 16px;
+    padding: 16px 28px 0;
     position: sticky;
     top: 0;
     background: #eef0f1;
     z-index: 10;
-    box-shadow: 0 2px 4px rgba(60, 64, 67, 0.1);
+}
+
+.ga-page-head-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .ga-page-head h1 {
-    font-size: 28px;
+    font-family: "Google Sans", Roboto, Arial, sans-serif;
+    font-size: 22px;
     font-weight: 400;
     line-height: 36px;
-    margin: 0 0 20px;
+    margin: 0;
     color: #202124;
+}
+
+.ga-page-head-selector-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 .ga-tabs {
     gap: 24px;
+    padding: 0 28px 16px;
+    margin-bottom: 22px;
 }
 
 .ga-tabs button {
@@ -824,13 +840,13 @@
     padding-top: 8px;
 }
 
-.ga-floating-add {
+button.ga-floating-add {
     position: sticky;
     z-index: 20;
-    left: 8px;
-    top: 8px;
-    width: 56px;
-    height: 56px;
+    left: 22px;
+    top: 80px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: #1a73e8;
     color: #fff;
@@ -840,17 +856,18 @@
     margin-bottom: 8px;
 }
 
-.ga-floating-add .material-symbols-outlined {
-    font-size: 34px;
+button.ga-floating-add .material-symbols-outlined {
+    font-size: 24px;
 }
 
 .ga-table-toolbar {
     position: sticky;
-    top: 72px;
-    height: 72px;
+    top: 88px;
+    height: 64px;
     border-bottom: 1px solid #dadce0;
     justify-content: space-between;
-    padding: 0 22px 0 86px;
+    padding: 10px 0 10px 36px;
+    align-items: center;
     background: #fff;
     z-index: 15;
     box-shadow: 0 2px 4px rgba(60, 64, 67, 0.1);
@@ -859,11 +876,14 @@
 .ga-toolbar-left {
     gap: 20px;
     color: #5f6368;
-    font-size: 18px;
+    font-size: 14px;
+    font-family: "Google Sans", Roboto, Arial, sans-serif;
 }
 
 .ga-toolbar-left .material-symbols-outlined {
-    font-size: 32px;
+    font-size: 24px;
+    padding-left: 24px;
+    padding-right: 20px;
 }
 
 .ga-filter-badge {
@@ -888,7 +908,7 @@
 }
 
 .ga-toolbar-actions .material-symbols-outlined {
-    font-size: 30px;
+    font-size: 24px;
 }
 
 .ga-policy-alert {
@@ -1239,6 +1259,10 @@
     .ga-profile,
     .ga-tool-button span:last-child {
         display: none;
+    }
+
+    .ga-tool-button--search {
+        display: flex;
     }
 
     .ga-sidebar {
