@@ -26,8 +26,9 @@ createApp({
             selectedAdGroupId: params.get('adGroupId') || 'adgroup-1',
             previewModal: null,
             isContextBarHidden: false,
-            ads_isCampaignOpen: false,
+            ads_isCampaignOpen: true,
             ads_isInsightsReportsOpen: true,
+            ads_isAssetsOpen:false,
             tooltip: {
                 visible: false,
                 text: '',

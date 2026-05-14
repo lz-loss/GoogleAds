@@ -116,8 +116,16 @@
             </aside>
 
             <nav class="ga-sidebar" aria-label="Campaign navigation" @mouseover="handleTooltipMouseOver" @mouseleave="hideTooltip" @mousemove="handleMouseMove">
-                <a class="ga-sidebar-link" data-tooltip="Overview" href="#">Overview</a>
-                <a class="ga-sidebar-link" data-tooltip="Recommendations" href="#">Recommendations</a>
+                <div class="ga-sidebar-group" href="#">
+                    <button class="ga-sidebar-group-title" type="button">
+                        <span data-tooltip="Overview">Overview</span>
+                    </button>
+                </div>
+                <div class="ga-sidebar-group" href="#">
+                    <button class="ga-sidebar-group-title" type="button">
+                        <span data-tooltip="Recommendations">Recommendations</span>
+                    </button>
+                </div>
                 <div class="ga-sidebar-group" :class="{ open: ads_isInsightsReportsOpen }">
                     <button class="ga-sidebar-group-title" type="button" @click="ads_isInsightsReportsOpen = !ads_isInsightsReportsOpen">
                         <span data-tooltip="Insights and reports">Insights and reports</span>
@@ -140,15 +148,25 @@
                         <a class="ga-sidebar-link" href="#" data-tooltip="Experiments">Experiments</a>
                     </div>
                 </div>
-                <div class="ga-sidebar-group open">
-                    <button class="ga-sidebar-group-title" type="button">
-                        <span data-tooltip="Assets">Assets</span>
-                        <span class="material-symbols-outlined">expand_less</span>
+                <div class="ga-sidebar-group" :class="{ open: ads_isAssetsOpen }">
+                    <button class="ga-sidebar-group-title" type="button" @click="ads_isAssetsOpen = !ads_isAssetsOpen" data-tooltip="Assets">
+                        <span>Assets</span>
+                        <span class="material-symbols-outlined">{{ ads_isAssetsOpen ? 'expand_less' : 'expand_more' }}</span>
                     </button>
-                    <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref" data-tooltip="Assets">Assets</a>
+                    <div class="ga-sidebar-submenu">
+                        <a class="ga-sidebar-link" :class="{ active: pageMode === 'adassets' }" :href="adAssetsHref" data-tooltip="Assets">Assets</a>
+                    </div>
                 </div>
-                <a class="ga-sidebar-link" href="#" data-tooltip="Audiences, keywords, and content">Audiences, keywords, and content</a>
-                <a class="ga-sidebar-link" href="#" data-tooltip="Change history">Change history</a>
+                 <div class="ga-sidebar-group" href="#">
+                    <button class="ga-sidebar-group-title" type="button">
+                        <span data-tooltip="Audiences, keywords, and content">Audiences, keywords, and content</span>
+                    </button>
+                </div>
+                 <div class="ga-sidebar-group" href="#">
+                    <button class="ga-sidebar-group-title" type="button">
+                        <span data-tooltip="Change history">Change history</span>
+                    </button>
+                </div>
             </nav>
 
             <main class="ga-main">
