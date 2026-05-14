@@ -121,6 +121,7 @@ body {
     height: 48px;
     cursor: pointer;
     color: #5f6368;
+    text-decoration: none;
 }
 
 .menu-icon:hover {

@@ -48,7 +48,7 @@
                 </label> -->
             </div>
             <div class="ga-topbar-actions">
-                <button class="ga-tool-button" type="button">
+                <button class="ga-tool-button ga-tool-button--search" type="button">
                     <span class="material-symbols-outlined">search</span>
                     <span>Search</span>
                 </button>
@@ -172,7 +172,7 @@
             <main class="ga-main">
                 <section class="ga-context-bar" :class="{ hidden: isContextBarHidden }">
                     <div class="ga-selectors">
-                        <div class="ga-selector active" @click.stop="toggleDropdown('view')">
+                        <div class="ga-selector active" v-if="!isContextBarHidden" @click.stop="toggleDropdown('view')">
                             <small>View (2 filters)</small>
                             <strong><span class="material-symbols-outlined">home</span> All campaigns</strong>
                             <span class="material-symbols-outlined">arrow_drop_down</span>
@@ -216,11 +216,17 @@
                 </section>
 
                 <section class="ga-page-head">
-                    <div>
+                    <div class="ga-page-head-heading">
                         <h1>{{ pageTitle }}</h1>
-                        <div v-if="pageMode !== 'adgroups'" class="ga-tabs">
-                            <button class="active" type="button">{{ pageMode === 'adassets' ? 'Assets' : 'Campaigns' }}</button>
-                            <button type="button">{{ pageMode === 'adassets' ? 'Combinations' : 'Settings' }}</button>
+                        <div v-if="isContextBarHidden" class="ga-page-head-selector-wrapper">
+                            <div class="ga-selector active" @click.stop="toggleDropdown('view')">
+                                <small>View (2 filters)</small>
+                                <strong><span class="material-symbols-outlined">home</span> All campaigns</strong>
+                                <span class="material-symbols-outlined">arrow_drop_down</span>
+                                <div v-if="dropdown === 'view'" class="ga-dropdown">
+                                    <a href="/aw/campaigns">All campaigns</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="ga-date-row">
@@ -234,6 +240,11 @@
                         <a href="#">Show last 30 days</a>
                     </div>
                 </section>
+
+                <div v-if="pageMode !== 'adgroups'" class="ga-tabs">
+                    <button class="active" type="button">{{ pageMode === 'adassets' ? 'Assets' : 'Campaigns' }}</button>
+                    <button type="button">{{ pageMode === 'adassets' ? 'Combinations' : 'Settings' }}</button>
+                </div>
 
                 <div v-if="pageMode !== 'adassets'" class="ga-info-banner">
                     <span class="material-symbols-outlined">info</span>
@@ -343,7 +354,25 @@
                                 </tr>
                                 <tr v-for="campaign in campaignRows" :key="campaign.id">
                                     <td><span class="ga-checkbox"></span></td>
-                                    <td><span :class="['ga-status-dot', statusDotClass(campaign.campaignStatus)]"></span></td>
+                                    <td class="state-col">
+                                        <div class="ga-status-cell" :class="{ open: dropdown === statusDropdownName(campaign.id) }" @click.stop>
+                                            <button class="ga-status-trigger" type="button"
+                                                :aria-label="`Change campaign status for ${campaign.campaign}`"
+                                                :aria-expanded="dropdown === statusDropdownName(campaign.id)"
+                                                @click.stop="toggleStatusMenu(campaign.id)">
+                                                <span :class="['ga-status-marker', statusDotClass(campaign.campaignStatus)]" aria-hidden="true"></span>
+                                                <span class="material-symbols-outlined ga-status-arrow" aria-hidden="true">arrow_drop_down</span>
+                                            </button>
+                                            <div v-if="dropdown === statusDropdownName(campaign.id)" class="ga-status-menu" role="menu">
+                                                <button v-for="option in statusMenuOptions" :key="option.state" type="button" role="menuitem"
+                                                    :class="{ active: campaign.campaignStatus === option.state }"
+                                                    @click.stop="setCampaignStatus(campaign, option.state)">
+                                                    <span :class="['ga-status-marker', statusDotClass(option.state)]" aria-hidden="true"></span>
+                                                    <span>{{ option.label }}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td class="name-col">
                                         <span class="material-symbols-outlined ga-campaign-type">download_for_offline</span>
                                         <a :href="campaignHref(campaign.id)">{{ campaign.campaign }}</a>

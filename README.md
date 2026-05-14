@@ -40,7 +40,8 @@ npm run dev
 ```
 
 服务器将在 http://localhost 启动。
-
+1. https://localhost/aw/campaigns
+2. https://localhost/aw/reporteditor
 
 
 ## 仿真环境
