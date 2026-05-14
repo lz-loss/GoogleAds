@@ -451,6 +451,7 @@
     text-decoration: none;
     display: flex;
     align-items: center;
+    text-align: left;
     justify-content: space-between;
     flex: 1 0;
     font-family: Google Sans, Roboto, Arial, sans-serif;
